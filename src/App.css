@@ -1,0 +1,325 @@
+
+.title-sesion{
+    color: rgb(255, 191, 0);
+}
+
+.form{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(45deg, #6500bd, #bb4eff);
+    background-size: 200% 200%;
+    animation: cambiarColor 3s infinite alternate;
+    width: 100vw;
+    height: auto;
+    height: 100vh;
+}
+
+@keyframes cambiarColor {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+.contem{
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 8px 3px #f8f8f8;
+}
+
+.cjcorreo{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 4%;
+}
+
+.cjcontraseña{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 4%;
+}
+
+label{
+    color: #181818;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.lbcontraseña {
+    display: flex;
+    align-items: center;
+}
+
+
+input{
+    padding: 9px;
+    width: 100%;;
+    border-radius: 15px;
+    border-width: 1px;
+    margin-left: 10%;
+}
+
+
+.btn-iniciar-sesion{
+    background-color: #f8d300;
+    width: 130px;
+    height: 30px;
+    margin: 3px;
+    border: none;
+    border-radius: 10px;
+}
+
+.btn-iniciar-sesion:hover{
+    background-color: #f8d300d9;
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.form .btn-iniciar-sesion{
+    display: flex;
+    float: right;
+    justify-content: center;
+    align-items: center;
+    margin-right: 10%;
+}
+
+.error-message{
+    color: #f00c0c;
+    font-weight: 900;
+    font-size: 13px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+@media (max-width: 550px) {
+    .contem{
+        width: 100%;
+    }
+}
+
+
+
+/*##################################################*/
+
+
+
+.contenhome{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to bottom, #8400f8, #bb4eff); /* quizas una imagen*/
+    width: 100vw;
+    height: auto;
+    min-height: 100vh;
+}
+
+.conten2home{
+    background-color: #f1f1f1;
+    width: 85%;
+    height: 85%;
+    border-radius: 15px;
+    padding: 2%;
+}
+
+.titulo-opciones{
+    display: flex;
+}
+
+.cjtitulo,.cjopciones{
+    width: 50%;
+}
+
+.cjopciones{
+    display: flex;
+}
+
+.cjopciones button{
+    background-color: #f8d300;
+    width: 70px;
+    max-width: 200px;
+    height: 30px;
+    margin: 3px;
+    border: none;
+    border-radius: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cjopciones button:hover{
+    background-color: #f8d300d9;
+    transform: scale(1.02);
+    cursor: pointer;
+}
+
+.cjopciones,.btn-opciones{
+    align-items: center;
+    justify-content: end;
+
+}
+
+.titulohome{
+    font-family:Verdana, Geneva, Tahoma, sans-serif
+}
+
+
+
+.opciones{
+    background-color: #f3f3f3;
+    padding: 5px;
+}
+
+.btn-nuevatarea{
+    background-color: #00c2f8;
+    width: 130px;
+    height: 40px;
+    margin: 3px;
+    border: none;
+    border-radius: 5px;
+}
+
+.btn-nuevatarea:hover{
+    background-color: #70d0eb;
+    transform: scale(1.02);
+    cursor: pointer;
+}
+
+.panel-cajas{
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 5px;
+    overflow: hidden;
+    min-height: 170px;
+}
+
+.contenedor-cajas{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, auto));
+    justify-content: center;
+}
+
+.caja{
+    min-width: 200px;
+    max-width: 280px;
+    font-size: 12px;
+    border-radius: 15px;
+    background-color: #8400f8;
+    margin: 4px;
+    padding: 5px;
+    box-shadow: 0 0 5px 2px #6f04cd;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 300px;
+}
+
+.caja:hover{
+    background-color: #6f04cd;
+    transform: scale(0.97);
+    cursor: pointer;
+}
+
+.btn-eliminar-tr{
+    background-color: #f80057;
+    width: 90px;
+    height: 25px;
+    margin: 3px;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    float: right;
+}
+
+.btn-eliminar-tr:hover{
+    background-color: #cf1e5c;
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal-content {
+    background: #8400f8;
+    padding: 20px;
+    border-radius: 15px;
+    width: 300px;
+    text-align: center;
+  }
+
+  .modal-content h2 {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .modal-content textarea{
+    min-height: 70px;
+    width: 80%;
+    margin: 1px;
+    margin-top: 5px;
+    border-radius: 10px;
+    border: none;
+  }
+
+  .modal-content input{
+    display: flex;
+    flex-direction: column;
+    width: 75%;
+    margin-bottom: 4px;
+    border: none;
+  }
+
+  .modal-content button{
+    background-color: #00c2f8;
+    width: 130px;
+    height: 40px;
+    margin: 3px;
+    border: none;
+    border-radius: 5px;
+  }
+
+  .modal-content .btn-cancelar-tarea{
+    background-color: #f80057;
+  }
+  
+  
+
+@media (max-width: 550px) {
+    .contenedor-cajas{
+        min-width: 100px;
+    }
+
+    .titulo-opciones{
+        display: block;
+    }
+
+    .opciones{
+        display: flex;
+        justify-content: center;
+        padding: 2%;
+    }
+
+    .cjopciones{
+        display: flex;
+        justify-content: left;
+        margin-bottom: 10px;
+    }
+
+    .panel-cajas{
+        min-height: 200px;
+    }
+  }
