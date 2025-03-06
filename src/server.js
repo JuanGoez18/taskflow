@@ -108,9 +108,6 @@ app.post("/register", async (req, res) => {
 app.post("/login", async (req, res) => {
   const { email, contraseña } = req.body;
 
-  console.log("📩 Email recibido:", email); //temp
-  console.log("🔑 Contraseña recibida:", contraseña); //temp
-
   if (!email || !contraseña) {
     return res.status(400).json({ message: "email y contraseña son obligatorios" });
   }
@@ -124,8 +121,6 @@ app.post("/login", async (req, res) => {
 
     const user = result.rows[0];
     const passwordMatch = await bcrypt.compare(contraseña, user.contraseña);
-
-    console.log("🔍 Comparación de contraseñas:", passwordMatch); //temp
 
     if (!passwordMatch) {
       return res.status(401).json({ message: "Contraseña incorrecta" });
@@ -145,10 +140,10 @@ app.post("/login", async (req, res) => {
 });
 
 
-
+/*
 // **3. Ruta protegida de prueba**
 app.get("/perfil", (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  const token = req.headers.authorization?.split(" ")[1];         POSIBLE ELIMINAR
 
   if (!token) {
     return res.status(403).json({ message: "Acceso denegado" });
@@ -160,24 +155,72 @@ app.get("/perfil", (req, res) => {
   } catch (error) {
     res.status(401).json({ message: "Token inválido" });
   }
+}); */
+
+
+
+// Obtener tareas ###################################
+app.get("/tareas/:usuario_id", async (req, res) => {
+  const { usuario_id } = req.params;
+  try {
+    const result = await pool.query(
+      `SELECT * FROM tareas 
+       WHERE usuario_id = $1 
+       ORDER BY 
+         CASE 
+           WHEN prioridad = 'alta' THEN 1 
+           WHEN prioridad = 'media' THEN 2 
+           WHEN prioridad = 'baja' THEN 3 
+           ELSE 0 
+         END ASC, 
+         fecha_limite ASC`,
+      [usuario_id]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.json([]);
+  }
 });
 
-
-app.get('/tareas', async (req, res) => {
+// Crear tarea ######################################
+app.post("/tareas/:usuario_id", async (req, res) => {
+  const { titulo, descripcion, fecha_limite, prioridad, usuario_id } = req.body;
   try {
-      const tareas = await pool.query(`
-          SELECT * FROM tareas 
-          ORDER BY 
-              CASE prioridad 
-                  WHEN 'Alta' THEN 1
-                  WHEN 'Media' THEN 2
-                  WHEN 'Baja' THEN 3
-              END,
-              fecha_limite ASC
-      `);
-      res.json(tareas.rows);
-  } catch (error) {
-      res.status(500).json({ error: error.message });
+    const result = await pool.query(
+      "INSERT INTO tareas (titulo, descripcion, fecha_limite, prioridad, usuario_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [titulo, descripcion, fecha_limite, prioridad, usuario_id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Editar tarea ########################################
+app.put("/tareas/:id", async (req, res) => {
+  const { id } = req.params;
+  const { titulo, descripcion, fecha_limite, prioridad } = req.body;
+  try {
+    const result = await pool.query(
+      "UPDATE tareas SET titulo=$1, descripcion=$2, fecha_limite=$3, prioridad=$4 WHERE id=$5 RETURNING *",
+      [titulo, descripcion, fecha_limite, prioridad, id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Eliminar tarea #########################################
+app.delete("/tareas/:id", async (req, res) => {
+  const { id } = req.params;
+  const { usuario_id } = req.body;
+  try {
+    await pool.query("DELETE FROM tareas WHERE id = $1 AND usuario_id = $2 RETURNING *", [id, usuario_id]);
+    res.json({ message: "Tarea eliminada" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

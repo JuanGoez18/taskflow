@@ -204,7 +204,7 @@ input{
 
 .caja{
     min-width: 200px;
-    max-width: 280px;
+    max-width: 250px;
     font-size: 12px;
     border-radius: 15px;
     background-color: #8400f8;
@@ -221,6 +221,18 @@ input{
     background-color: #6f04cd;
     transform: scale(0.97);
     cursor: pointer;
+}
+
+.caja .contercj{
+    font-size: 20px;
+    float: right;
+    background-color: #f80057;
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
+    text-align: center;
+    justify-content: center;
 }
 
 .btn-eliminar-tr{
@@ -281,6 +293,14 @@ input{
     width: 75%;
     margin-bottom: 4px;
     border: none;
+  }
+
+  .modal-content .seleprioridad{
+    margin-bottom: 2%;
+    border: none;
+    min-height: 35px;
+    width: 80%;
+    border-radius: 14px;
   }
 
   .modal-content button{
