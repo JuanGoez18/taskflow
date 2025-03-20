@@ -60,7 +60,7 @@ const LoginForm = () => {
             <input
               type="email"
               className="inpcorreo"
-              placeholder="ejemplo@email.com"
+              placeholder="ejemplo@gmail.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -89,7 +89,7 @@ const LoginForm = () => {
 
         {/* Enlace para registro */}
         <p className="text-center text-gray-500 text-sm mt-4">
-          ¿No tienes cuenta? <a href="#" className="link-registro">Regístrate aquí</a>
+          ¿No tienes cuenta? <a href="/Registro" className="link-registro">Regístrate aquí</a>
         </p>
       </div>
     </div>

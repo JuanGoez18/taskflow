@@ -1,13 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Rubik:wght@300;400;600;700;800&display=swap');
+
+
 
 .title-sesion{
-    color: rgb(255, 191, 0);
+    color: #4A008B;
+    font-weight: 900;
+    font-family: 'Quicksand', sans-serif;
 }
 
 .form{
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(45deg, #6500bd, #bb4eff);
+    background: linear-gradient(45deg, #4a008b, #bb4eff);
     background-size: 200% 200%;
     animation: cambiarColor 3s infinite alternate;
     width: 100vw;
@@ -44,8 +50,8 @@
 }
 
 label{
-    color: #181818;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: #333;
+    font-family: 'Quicksand', sans-serif;
     font-weight: 600;
     font-size: 16px;
 }
@@ -62,11 +68,12 @@ input{
     border-radius: 15px;
     border-width: 1px;
     margin-left: 10%;
+    font-family: 'Quicksand', sans-serif;
 }
 
 
 .btn-iniciar-sesion{
-    background-color: #f8d300;
+    background-color: #00c2f8;
     width: 130px;
     height: 30px;
     margin: 3px;
@@ -75,7 +82,7 @@ input{
 }
 
 .btn-iniciar-sesion:hover{
-    background-color: #f8d300d9;
+    background-color: #73d3ed;
     transform: scale(1.1);
     cursor: pointer;
 }
@@ -103,7 +110,49 @@ input{
 
 
 
+
 /*##################################################*/
+
+
+.title-registro{
+    color: #4A008B;
+    font-weight: 900;
+    font-family: 'Quicksand', sans-serif;
+}
+
+
+.inputs-register input{
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    margin: 0;
+    border: none;
+    outline: none;
+    border-bottom: 1px solid #000;
+    transition: border-color 0.3s ease-in-out;
+    margin-bottom: 10px;
+    border-radius: 0;
+    padding-left: 0px;
+    font-family: 'Quicksand', sans-serif;
+}
+
+.inputs-register button{
+    background-color: #00c2f8;
+    width: 150px;
+    height: 30px;
+    margin: 3px;
+    border: none;
+    border-radius: 10px;
+}
+
+.inputs-register button:hover{
+    background-color: #73d3ed;
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+/*##################################################*/
+
 
 
 
@@ -115,10 +164,12 @@ input{
     width: 100vw;
     height: auto;
     min-height: 100vh;
+    padding-top: 4%;
+    padding-bottom: 4%;
 }
 
 .conten2home{
-    background-color: #f1f1f1;
+    background-color: #fff;
     width: 85%;
     height: 85%;
     border-radius: 15px;
@@ -138,7 +189,7 @@ input{
 }
 
 .cjopciones button{
-    background-color: #f8d300;
+    background-color: #00c2f8;
     width: 70px;
     max-width: 200px;
     height: 30px;
@@ -151,7 +202,7 @@ input{
 }
 
 .cjopciones button:hover{
-    background-color: #f8d300d9;
+    background-color: #73d3ed;
     transform: scale(1.02);
     cursor: pointer;
 }
@@ -163,13 +214,15 @@ input{
 }
 
 .titulohome{
-    font-family:Verdana, Geneva, Tahoma, sans-serif
+    font-family: 'Nunito', sans-serif;
+    color: #4A008B;
+    font-weight: 900;
+    font-size: 40px;
 }
 
 
-
 .opciones{
-    background-color: #f3f3f3;
+    background-color: 0;
     padding: 5px;
 }
 
@@ -203,11 +256,11 @@ input{
 }
 
 .caja{
-    min-width: 200px;
+    min-width: 250px;
     max-width: 250px;
     font-size: 12px;
     border-radius: 15px;
-    background-color: #8400f8;
+    background: linear-gradient(to bottom, #8400f8, #bb4eff);
     margin: 4px;
     padding: 5px;
     box-shadow: 0 0 5px 2px #6f04cd;
@@ -218,8 +271,6 @@ input{
 }
 
 .caja:hover{
-    background-color: #6f04cd;
-    transform: scale(0.97);
     cursor: pointer;
 }
 
@@ -233,6 +284,29 @@ input{
     border-radius: 30px;
     text-align: center;
     justify-content: center;
+}
+
+.caja h1{
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
+    font-family: 'Nunito', sans-serif;
+}
+
+.caja h2{
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'Rubik', sans-serif;
+}
+
+.caja span{
+    color: #333;
+    font-family: 'Rubik', sans-serif;
+    font-size: 15px;
 }
 
 .btn-eliminar-tr{
@@ -267,7 +341,7 @@ input{
   }
   
   .modal-content {
-    background: #8400f8;
+    background: #bb4eff;
     padding: 20px;
     border-radius: 15px;
     width: 300px;
@@ -312,13 +386,74 @@ input{
     border-radius: 5px;
   }
 
+  .modal-content button:hover{
+    background-color: #70d0eb;
+  }
+
+
   .modal-content .btn-cancelar-tarea{
     background-color: #f80057;
   }
+
+  .modal-content .btn-cancelar-tarea:hover{
+    background-color: #cf1e5c;
+  }
+
+
+  .modal-perfil {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-contenido-perfil {
+    background: #bb4eff;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    width: 300px;
+  }
+
+  .modal-botones-perfil button{
+    width: 100px;
+    height: 40px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+  }
+
+  .modal-botones-perfil .btn-logout{
+    background-color: #ff0000;
+  }
+
+  .modal-botones-perfil .btn-logout:hover{
+    background-color: #a10101;
+  }
   
+  .modal-botones-perfil .btn-cerrar{
+    background-color: #f80057;
+  }
+
+  .modal-botones-perfil .btn-cerrar:hover{
+    background-color: #cf1e5c;
+  }
   
 
 @media (max-width: 550px) {
+    .titulohome{
+        text-align: center;
+    }
+
+    .titulohome2{
+        display: block;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
     .contenedor-cajas{
         min-width: 100px;
     }

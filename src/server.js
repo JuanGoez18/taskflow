@@ -79,27 +79,29 @@ obtenerUsuarios(); */
 
 
 
+
+
+
 //SERVICIOS########################################################################
 
 
 //Registrar un nuevo usuario*********************************************
-app.post("/register", async (req, res) => {
-  const { nombre, apellido, edad, tipo, contraseña } = req.body;
-
-  if (!nombre || !apellido || !edad || !tipo || !contraseña) {
-    return res.status(400).json({ message: "Todos los campos son obligatorios" });
-  }
-
-  const hashedPassword = await bcrypt.hash(contraseña, 10);
+app.post("/registro", async (req, res) => {
+  const { nombre, apellido, email, edad, contraseña } = req.body;
 
   try {
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(contraseña, saltRounds);
+
     const result = await pool.query(
-      "INSERT INTO usuarios (nombre, apellido, edad, tipo, contraseña) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-      [nombre, apellido, edad, tipo, hashedPassword]
+      "INSERT INTO usuarios (nombre, apellido, email, edad, contraseña, tipo) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+      [nombre, apellido, email, edad, hashedPassword, "user"]
     );
-    res.json({ message: "Usuario registrado con éxito", user: result.rows[0] });
+
+    res.status(201).json({ message: "Usuario registrado con éxito", usuario: result.rows[0] });
   } catch (error) {
-    res.status(500).json({ message: "Error al registrar usuario", error });
+    console.error("Error al registrar usuario:", error);
+    res.status(500).json({ error: "Error en el registro" });
   }
 });
 
@@ -136,6 +138,23 @@ app.post("/login", async (req, res) => {
   } catch (error) {
     console.error("❌ Error en el login:", error);
     res.status(500).json({ message: "Error en el login", error });
+  }
+});
+
+
+app.get("/usuario/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const usuario = await pool.query("SELECT * FROM usuarios WHERE id = $1", [id]);
+    
+    if (usuario.rows.length === 0) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    res.json(usuario.rows[0]); // Enviar el usuario encontrado
+  } catch (error) {
+    console.error("Error al obtener usuario:", error);
+    res.status(500).json({ error: "Error en el servidor" });
   }
 });
 

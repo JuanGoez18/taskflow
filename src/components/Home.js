@@ -31,6 +31,36 @@ const Home = () => {
   const [tareas, setTareas] = useState([]);
   const [tareaEditando, setTareaEditando] = useState(null);
   const [formulario, setFormulario] = useState({ titulo: "", descripcion: "", fecha_limite: "", prioridad: "media" });
+  const [mostrarModal, setMostrarModal] = useState(false);
+
+
+  const [usuario, setUsuario] = useState(null);
+
+useEffect(() => {
+  const obtenerDatosUsuario = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/usuario/${usuario_id}`);
+      if (!res.ok) throw new Error("Error al obtener datos del usuario");
+      
+      const data = await res.json();
+      setUsuario(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  obtenerDatosUsuario();
+}, []);
+
+  const handleLogout = () => {
+    const confirmar = window.confirm("¿Estás seguro de que deseas cerrar sesión?");
+    if (confirmar) {
+      setMostrarModal(false);
+      localStorage.clear();
+      navigate("/");
+    }
+  };
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -137,12 +167,30 @@ const Home = () => {
       <div className="conten2home">
         <div className="titulo-opciones">
           <div className="cjtitulo">
-            <h1 className="titulohome">Bienvenido a TaskFlow</h1>
+            <h1 className="titulohome"><span>Bienvenido</span> <span className="titulohome2">a TaskFlow</span></h1>
             <p className="text-gray-600 mt-2">Crea y gestiona tus tareas.</p>
           </div>
           <div className="cjopciones">
-            <button className="btn-opciones">Perfil</button>
+            <button className="btn-opciones" onClick={() => setMostrarModal(true)}>Perfil</button>
             <button className="btn-opciones">Configuración</button>
+
+            {/* Modal-perfil */}
+            {mostrarModal && usuario && (
+              <div className="modal-perfil">
+                <div className="modal-contenido-perfil">
+                  <h2>Perfil</h2>
+                  <p><strong>Nombre:</strong> {usuario.nombre}</p>
+                  <p><strong>Email:</strong> {usuario.email}</p>
+                  <p><strong>Edad:</strong> {usuario.edad}</p>
+
+                  <div className="modal-botones-perfil">
+                    <button onClick={() => setMostrarModal(false)} className="btn-cerrar">Cancelar</button>
+                    <button onClick={handleLogout} className="btn-logout">Desconectar</button>
+                  </div>
+                </div>
+              </div>
+          )}
+
           </div>
         </div>
 
@@ -165,14 +213,21 @@ const Home = () => {
                   transition={{ duration: 0.3 }}
                   onClick={() => abrirEditor(tarea)}
                 >
-                  <p className="contercj">{index + 1}</p> {/* Número de la tarea */}
+                  <p className="contercj">{index + 1}</p>
                   <h1>{tarea.titulo}</h1>
                   <h2>{tarea.descripcion}</h2>
                   <span>{formatearFecha(tarea.fecha_limite)}</span>
                   <p>Prioridad: {tarea.prioridad}</p><br></br>
-                  <button onClick={(e) => { e.stopPropagation(); eliminarTarea(tarea.id); }} className="btn-eliminar-tr">
-                    Finalizar
-                  </button>
+                  <button onClick={(e) => {e.stopPropagation(); 
+                    const confirmar = window.confirm("¿Estás seguro de finalizar esta tarea?");
+                    if (confirmar) {
+                      eliminarTarea(tarea.id);
+                    }
+                  }} 
+                  className="btn-eliminar-tr"
+                >
+                  Finalizar
+                </button>
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -180,6 +235,7 @@ const Home = () => {
         </div>
       </div>
 
+      {/* Modal-tareas */}
       {tareaEditando !== null && (
         <div className="modal">
           <div className="modal-content">
@@ -193,8 +249,8 @@ const Home = () => {
             </select>
             <textarea name="descripcion" value={formulario.descripcion} onChange={manejarCambio}></textarea>
             <br></br>
-            <button onClick={guardarCambios} className="btn-guardar-tarea">Guardar</button>
             <button onClick={cerrarEditor} className="btn-cancelar-tarea">Cancelar</button>
+            <button onClick={guardarCambios} className="btn-guardar-tarea">Guardar</button>
           </div>
         </div>
       )}
