@@ -32,6 +32,7 @@ const Home = () => {
   const [tareaEditando, setTareaEditando] = useState(null);
   const [formulario, setFormulario] = useState({ titulo: "", descripcion: "", fecha_limite: "", prioridad: "media" });
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [tareasVencidas, setTareasVencidas] = useState([]);
 
 
   const [usuario, setUsuario] = useState(null);
@@ -160,6 +161,39 @@ useEffect(() => {
     });
   };
 
+
+  useEffect(() => {
+    const hoy = new Date();
+    const tareasNotificadas = JSON.parse(localStorage.getItem("tareasNotificadas")) || [];
+
+    const nuevasTareasVencidas = tareas.filter((tarea) => {
+      const fechaTarea = new Date(tarea.fecha_limite);
+      const diferenciaDias = Math.ceil((fechaTarea - hoy) / (1000 * 60 * 60 * 24));
+
+      // Si la tarea está vencida y NO ha sido notificada antes
+      if (diferenciaDias <= 0 && !tareasNotificadas.includes(tarea.id)) {
+        return true;
+      }
+      return false;
+    });
+
+    if (nuevasTareasVencidas.length > 0) {
+      nuevasTareasVencidas.forEach((tarea) => {
+        alert(`⚠️ La tarea "${tarea.titulo}" ha vencido.`);
+      });
+
+      // Guardar tareas notificadas en localStorage
+      const idsNotificados = nuevasTareasVencidas.map((tarea) => tarea.id);
+      localStorage.setItem(
+        "tareasNotificadas",
+        JSON.stringify([...tareasNotificadas, ...idsNotificados])
+      );
+    }
+
+    setTareasVencidas(nuevasTareasVencidas);
+  }, [tareas]);
+
+
   
 
   return (
@@ -172,7 +206,8 @@ useEffect(() => {
           </div>
           <div className="cjopciones">
             <button className="btn-opciones" onClick={() => setMostrarModal(true)}>Perfil</button>
-            <button className="btn-opciones">Configuración</button>
+            <button className="btn-opciones">Opciones</button>
+            <button className="btn-opcioes">info</button>
 
             {/* Modal-perfil */}
             {mostrarModal && usuario && (

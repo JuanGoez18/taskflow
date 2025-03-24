@@ -9,24 +9,27 @@
     font-family: 'Quicksand', sans-serif;
 }
 
-.form{
+.form {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(45deg, #4a008b, #bb4eff);
-    background-size: 200% 200%;
-    animation: cambiarColor 3s infinite alternate;
+    position: relative;
     width: 100vw;
-    height: auto;
     height: 100vh;
+    overflow: hidden;
+    background: url('../public/fondoTKF2.png') no-repeat center center, 
+                linear-gradient(45deg, #440080, #bb4eff);
+    background-size: cover, 200% 200%;
+    background-position: center, center; 
+    animation: cambiarColor 3s infinite alternate;
 }
 
 @keyframes cambiarColor {
     0% {
-        background-position: 0% 50%;
+        background-position: center, 0% 50%;
     }
     100% {
-        background-position: 100% 50%;
+        background-position: center, 100% 50%;
     }
 }
 
@@ -79,6 +82,9 @@ input{
     margin: 3px;
     border: none;
     border-radius: 10px;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 600;
+    color: #333;
 }
 
 .btn-iniciar-sesion:hover{
@@ -143,6 +149,9 @@ input{
     margin: 3px;
     border: none;
     border-radius: 10px;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 600;
+    color: #333;
 }
 
 .inputs-register button:hover{
@@ -160,8 +169,11 @@ input{
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(to bottom, #8400f8, #bb4eff); /* quizas una imagen*/
-    width: 100vw;
+    background: url('../public/fondoTKF2.png') no-repeat center center, 
+                linear-gradient(45deg, #440080, #bb4eff);
+    background-size: cover, 200% 200%;
+    background-position: center, center;
+    width: 100%;
     height: auto;
     min-height: 100vh;
     padding-top: 4%;
@@ -172,7 +184,7 @@ input{
     background-color: #fff;
     width: 85%;
     height: 85%;
-    border-radius: 15px;
+    border-radius: 20px;
     padding: 2%;
 }
 
@@ -190,7 +202,7 @@ input{
 
 .cjopciones button{
     background-color: #00c2f8;
-    width: 70px;
+    min-width: 70px;
     max-width: 200px;
     height: 30px;
     margin: 3px;
@@ -199,6 +211,9 @@ input{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 600;
+    color: #333;
 }
 
 .cjopciones button:hover{
@@ -227,16 +242,19 @@ input{
 }
 
 .btn-nuevatarea{
-    background-color: #00c2f8;
+    background-color: #b06bec;
     width: 130px;
     height: 40px;
     margin: 3px;
     border: none;
     border-radius: 5px;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 600;
+    color: #fff;
 }
 
 .btn-nuevatarea:hover{
-    background-color: #70d0eb;
+    background-color: #8d4bc7;
     transform: scale(1.02);
     cursor: pointer;
 }
@@ -260,10 +278,9 @@ input{
     max-width: 250px;
     font-size: 12px;
     border-radius: 15px;
-    background: linear-gradient(to bottom, #8400f8, #bb4eff);
+    background: #904eca;
     margin: 4px;
     padding: 5px;
-    box-shadow: 0 0 5px 2px #6f04cd;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -341,7 +358,7 @@ input{
   }
   
   .modal-content {
-    background: #bb4eff;
+    background: #d0d0d0;
     padding: 20px;
     border-radius: 15px;
     width: 300px;
@@ -349,7 +366,8 @@ input{
   }
 
   .modal-content h2 {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Nunito', sans-serif;
+    color: #333;
   }
 
   .modal-content textarea{
@@ -359,6 +377,7 @@ input{
     margin-top: 5px;
     border-radius: 10px;
     border: none;
+    font-family: 'Nunito', sans-serif;
   }
 
   .modal-content input{
@@ -375,6 +394,7 @@ input{
     min-height: 35px;
     width: 80%;
     border-radius: 14px;
+    font-family: 'Nunito', sans-serif;
   }
 
   .modal-content button{
@@ -413,7 +433,7 @@ input{
   }
 
   .modal-contenido-perfil {
-    background: #bb4eff;
+    background: #d0d0d0;
     padding: 20px;
     border-radius: 15px;
     text-align: center;
@@ -423,7 +443,7 @@ input{
   .modal-botones-perfil button{
     width: 100px;
     height: 40px;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-family: 'Rubik', sans-serif;
   }
 
   .modal-botones-perfil .btn-logout{
@@ -444,6 +464,8 @@ input{
   
 
 @media (max-width: 550px) {
+
+    
     .titulohome{
         text-align: center;
     }
@@ -476,5 +498,12 @@ input{
 
     .panel-cajas{
         min-height: 200px;
+    }
+  }
+
+  @media (max-width: 650px) {
+    .conten2home{
+        width: 100%;
+        height: 100%;
     }
   }
