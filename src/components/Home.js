@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, FlatTree } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const obtenerUsuarioID = () => {
   const token = localStorage.getItem("token");
@@ -87,10 +89,15 @@ useEffect(() => {
   // 🔹 Agregar nueva tarea ✔
   const agregarTarea = async () => {
     try {
+      const mañana = new Date();
+      mañana.setDate(mañana.getDate() + 1);
+      const fechaMañana = mañana.toISOString().split("T")[0]; 
+
+
       const nuevaTarea = {
         titulo: "🖊Nueva tarea",
         descripcion: "🖊Descripción",
-        fecha_limite: new Date().toISOString().split("T")[0],
+        fecha_limite: fechaMañana,
         prioridad: "media",
         usuario_id: usuario_id,
       };
@@ -102,7 +109,10 @@ useEffect(() => {
       });
 
       if (res.ok) {
-        cargarTareas(); 
+        const tareaCreada = await res.json(); // Obtener la tarea creada con ID
+        setTareas([...tareas, tareaCreada]); // Agregar al estado
+        abrirEditor(tareaCreada);
+        //cargarTareas(); 
       }
     } catch (error) {
       console.error("Error al agregar tarea:", error);
@@ -165,49 +175,99 @@ useEffect(() => {
   useEffect(() => {
     const hoy = new Date();
     const tareasNotificadas = JSON.parse(localStorage.getItem("tareasNotificadas")) || [];
-
+  
     const nuevasTareasVencidas = tareas.filter((tarea) => {
       const fechaTarea = new Date(tarea.fecha_limite);
       const diferenciaDias = Math.ceil((fechaTarea - hoy) / (1000 * 60 * 60 * 24));
-
-      // Si la tarea está vencida y NO ha sido notificada antes
+  
       if (diferenciaDias <= 0 && !tareasNotificadas.includes(tarea.id)) {
         return true;
       }
       return false;
     });
-
+  
     if (nuevasTareasVencidas.length > 0) {
       nuevasTareasVencidas.forEach((tarea) => {
-        alert(`⚠️ La tarea "${tarea.titulo}" ha vencido.`);
+        toast.warn(`La tarea "${tarea.titulo}" ha vencido.`, {
+          className: "toast-custom",
+          position: "top-left",
+          autoClose: 15000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
       });
-
-      // Guardar tareas notificadas en localStorage
+  
       const idsNotificados = nuevasTareasVencidas.map((tarea) => tarea.id);
-      localStorage.setItem(
-        "tareasNotificadas",
-        JSON.stringify([...tareasNotificadas, ...idsNotificados])
-      );
+      localStorage.setItem("tareasNotificadas", JSON.stringify([...tareasNotificadas, ...idsNotificados]));
     }
-
-    setTareasVencidas(nuevasTareasVencidas);
+  
+    setTareasVencidas(tareas.filter(t => new Date(t.fecha_limite) < hoy));
   }, [tareas]);
+
+
+  const [tareaAEliminar, setTareaAEliminar] = useState(null);
+  const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
+
+
+  const [mostrarModalOpciones, setMostrarModalOpciones] = useState(false);
+  const [esMovil, setEsMovil] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const manejarResize = () => {
+      setEsMovil(window.innerWidth < 964);
+    };
+
+    window.addEventListener("resize", manejarResize);
+    return () => window.removeEventListener("resize", manejarResize);
+  }, []);
+
+
 
 
   
 
-  return (
+  return  (
     <div className="contenhome">
       <div className="conten2home">
+        <ToastContainer />
         <div className="titulo-opciones">
           <div className="cjtitulo">
             <h1 className="titulohome"><span>Bienvenido</span> <span className="titulohome2">a TaskFlow</span></h1>
             <p className="text-gray-600 mt-2">Crea y gestiona tus tareas.</p>
           </div>
           <div className="cjopciones">
-            <button className="btn-opciones" onClick={() => setMostrarModal(true)}>Perfil</button>
-            <button className="btn-opciones">Opciones</button>
-            <button className="btn-opcioes">info</button>
+            {/* 📌 Botones en PC */}
+            {!esMovil ? (
+              <>
+                <button className="btn-opciones" onClick={() => setMostrarModal(true)}>Perfil</button>
+                <button className="btn-opciones">Gráficos</button>
+                <button className="btn-opciones">Opciones</button>
+              </>
+            ) : (
+              // 📌 Botón de menú en móviles
+              <button 
+                className="btn-menu-movil" 
+                onClick={() => setMostrarModalOpciones(true)}
+              >
+                ☰ Menú
+              </button>
+            )}
+
+            {/* 📌 Modal de opciones en móviles */}
+            {mostrarModalOpciones && (
+              <div className="modal">
+                <div className="modal-content">
+                  <h2>Menú</h2>
+                  <button className="btn-opciones" onClick={() => setMostrarModal(true)}>Perfil</button>
+                  <button className="btn-opciones" onClick={() => setMostrarModalOpciones(false)}>Gráficos</button>
+                  <button className="btn-opciones" onClick={() => setMostrarModalOpciones(false)}>Opciones</button>
+                  <button className="btn-cancelar-tarea" onClick={() => setMostrarModalOpciones(false)}>Cerrar</button>
+                </div>
+              </div>
+            )}
 
             {/* Modal-perfil */}
             {mostrarModal && usuario && (
@@ -235,13 +295,43 @@ useEffect(() => {
           </button>
         </div>
 
+        
+        {/*modal-eliminar-opcion*/}
+        {mostrarModalEliminar && tareaAEliminar && (
+          <div className="modal">
+            <div className="modal-content">
+              <h2 className="modal-eliminar-titulo">⚠Confirmar eliminación</h2>
+              <p>¿Estás seguro de que deseas finalizar la tarea <strong>{tareaAEliminar.titulo}</strong>?</p>
+              
+              <button onClick={() => {
+                setMostrarModalEliminar(false);
+                setTareaAEliminar(null);
+              }} className="btn-cancelar-tarea">
+                Cancelar
+              </button>
+
+              <button 
+                onClick={() => {
+                  eliminarTarea(tareaAEliminar.id);
+                  setMostrarModalEliminar(false);
+                  setTareaAEliminar(null);
+                }} 
+                className="btn-guardar-tarea"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        )}
+
+
         <div className="panel-cajas">
           <div className="contenedor-cajas">
             <AnimatePresence>
               {tareas.map((tarea, index) => (
                 <motion.div
                   key={tarea.id}
-                  className="caja"
+                  className={`caja ${new Date(tarea.fecha_limite) < new Date() ? "tarea-vencida" : ""}`}
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
@@ -253,16 +343,18 @@ useEffect(() => {
                   <h2>{tarea.descripcion}</h2>
                   <span>{formatearFecha(tarea.fecha_limite)}</span>
                   <p>Prioridad: {tarea.prioridad}</p><br></br>
-                  <button onClick={(e) => {e.stopPropagation(); 
-                    const confirmar = window.confirm("¿Estás seguro de finalizar esta tarea?");
-                    if (confirmar) {
-                      eliminarTarea(tarea.id);
-                    }
-                  }} 
-                  className="btn-eliminar-tr"
-                >
-                  Finalizar
-                </button>
+                  <button 
+                    onClick={(e) => { 
+                      e.stopPropagation();
+                      setTareaAEliminar(tarea);
+                      setMostrarModalEliminar(true);
+                    }} 
+                    className="btn-eliminar-tr"
+                  >
+                    Finalizar
+                  </button>
+
+                
                 </motion.div>
               ))}
             </AnimatePresence>

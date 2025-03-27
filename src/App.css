@@ -202,8 +202,8 @@ input{
 
 .cjopciones button{
     background-color: #00c2f8;
-    min-width: 70px;
-    max-width: 200px;
+    min-width: 80px;
+    max-width: 80px;
     height: 30px;
     margin: 3px;
     border: none;
@@ -274,7 +274,7 @@ input{
 }
 
 .caja{
-    min-width: 250px;
+    width: 100%;
     max-width: 250px;
     font-size: 12px;
     border-radius: 15px;
@@ -286,6 +286,24 @@ input{
     text-overflow: ellipsis;
     max-height: 300px;
 }
+
+.tarea-vencida {
+    width: 100%;
+    max-width: 250px;
+    font-size: 12px;
+    border-radius: 15px;
+    background-color: #8b4b9b;
+    margin: 4px;
+    padding: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 300px;
+    color: #ffc266;
+  }
+
+
+
 
 .caja:hover{
     cursor: pointer;
@@ -326,6 +344,18 @@ input{
     font-size: 15px;
 }
 
+.tarea-vencida h1{
+    color: #ffb23e;
+}
+
+.tarea-vencida h2{
+    color: #ffc266;
+}
+
+.tarea-vencida span{
+    color: #ffc266;
+}
+
 .btn-eliminar-tr{
     background-color: #f80057;
     width: 90px;
@@ -358,11 +388,15 @@ input{
   }
   
   .modal-content {
-    background: #d0d0d0;
+    background: #9a6dc2;
     padding: 20px;
-    border-radius: 15px;
+    border-radius: 20px;
     width: 300px;
     text-align: center;
+  }
+
+  .modal-content input,select, textarea{
+    background-color: #f1f1f1;
   }
 
   .modal-content h2 {
@@ -433,7 +467,7 @@ input{
   }
 
   .modal-contenido-perfil {
-    background: #d0d0d0;
+    background: #fff;
     padding: 20px;
     border-radius: 15px;
     text-align: center;
@@ -441,7 +475,7 @@ input{
   }
 
   .modal-botones-perfil button{
-    width: 100px;
+    min-width: 100px;
     height: 40px;
     font-family: 'Rubik', sans-serif;
   }
@@ -461,11 +495,38 @@ input{
   .modal-botones-perfil .btn-cerrar:hover{
     background-color: #cf1e5c;
   }
+
+  .modal-content .modal-eliminar-titulo{
+    color: #fff;
+  }
+
+
+
+  .toast-custom {
+    background: #71078b !important;
+    color: #ffffff !important;
+    font-weight: bold;
+    border-left: 5px solid #550569;
+    padding: 12px;
+    border-radius: 25px;
+  }
   
 
-@media (max-width: 550px) {
+  
+  
+@media (max-width: 700px) {
 
-    
+    .conten2home{
+        width: 100%;
+        height: 100%;
+    }
+}
+
+
+
+
+@media (max-width: 550px) {
+ 
     .titulohome{
         text-align: center;
     }
@@ -476,12 +537,18 @@ input{
         white-space: nowrap;
     }
 
-    .contenedor-cajas{
-        min-width: 100px;
+    .contenedor-cajas {
+        grid-template-columns: repeat(auto-fit, minmax(193px, auto));
+    }
+
+    .caja {
+        width: 100%;
+        max-width: 170px;
+        font-size: 10px;
     }
 
     .titulo-opciones{
-        display: block;
+        display: flex;
     }
 
     .opciones{
@@ -490,20 +557,30 @@ input{
         padding: 2%;
     }
 
-    .cjopciones{
-        display: flex;
-        justify-content: left;
-        margin-bottom: 10px;
+    .titulo-opciones .cjtitulo .cjopciones{
+        min-width: 50%;
     }
 
     .panel-cajas{
         min-height: 200px;
     }
-  }
+}
 
-  @media (max-width: 650px) {
-    .conten2home{
-        width: 100%;
-        height: 100%;
+
+  
+
+
+@media (max-width: 412px) {
+    
+    .contenedor-cajas {
+        grid-template-columns: repeat(auto-fit, minmax(100%, auto));
     }
-  }
+
+    .caja {
+        width: 100%;
+        max-width: 94%;
+        height: 100%;
+        max-height: 150px;
+        font-size: 10px;
+    }
+}
