@@ -217,7 +217,7 @@ useEffect(() => {
 
   useEffect(() => {
     const manejarResize = () => {
-      setEsMovil(window.innerWidth < 964);
+      setEsMovil(window.innerWidth < 701);
     };
 
     window.addEventListener("resize", manejarResize);
