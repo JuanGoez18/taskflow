@@ -4,6 +4,8 @@ import { motion, AnimatePresence, FlatTree } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
+
 
 const obtenerUsuarioID = () => {
   const token = localStorage.getItem("token");
@@ -35,8 +37,8 @@ const Home = () => {
   const [formulario, setFormulario] = useState({ titulo: "", descripcion: "", fecha_limite: "", prioridad: "media" });
   const [mostrarModal, setMostrarModal] = useState(false);
   const [tareasVencidas, setTareasVencidas] = useState([]);
-
-
+  const [mostrarBienvenida, setMostrarBienvenida] = useState(false);
+  const [cargando, setCargando] = useState(true);
   const [usuario, setUsuario] = useState(null);
 
 useEffect(() => {
@@ -73,6 +75,23 @@ useEffect(() => {
       cargarTareas();
     }
   }, [navigate]);
+
+
+  useEffect(() => {
+    if (!localStorage.getItem("primera_vez")) {
+      setMostrarBienvenida(true);
+      localStorage.setItem("primera_vez", "false"); 
+  
+      setTimeout(() => {
+        setMostrarBienvenida(false);
+        setCargando(false);
+      }, 3000); 
+    } else {
+      setTimeout(() => {
+        setCargando(false);
+      }, 2000); 
+    }
+  }, []);
   
 
   // 🔹 Cargar tareas desde la base de datos ✔
@@ -225,159 +244,372 @@ useEffect(() => {
   }, []);
 
 
+  const [mostrarModalGraficos, setMostrarModalGraficos] = useState(false);
+
+    // 📌 Contar tareas
+    const totalTareas = tareas.length;
+    const tareasPendientes = tareas.filter(t => new Date(t.fecha_limite) >= new Date()).length;
+    const tareasVencidas2 = tareas.filter(t => new Date(t.fecha_limite) < new Date()).length;
+
+    const data = [
+      { name: "Pendientes", value: tareasPendientes, color: "#00c2f8" },
+      { name: "Vencidas", value: tareasVencidas2, color: "#f80057" },
+    ];
+
+    const obtenerEstadoTareas = () => {
+      const totalTareas = tareas.length;
+      const tareasPendientes = tareas.filter(t => new Date(t.fecha_limite) >= new Date()).length;
+
+      if (totalTareas === 0) return "Sin tareas";  
+      if (tareasPendientes === 2) return "Relax";  
+      if (tareasPendientes <= 4) return "Bueno";  
+      if (tareasPendientes <= 6) return "Regular";  
+      if (tareasPendientes <= 9) return "Ajetreado";  
+      return "Crítico";
+    };
 
 
+    const calcularPromedioDiasRestantes = (tareas) => {
+      if (tareas.length === 0) return "Sin tareas activas";
+    
+      const hoy = new Date();
+    
+      const totalDias = tareas.reduce((acumulado, tarea) => {
+        const fechaLimite = new Date(tarea.fecha_limite);
+        const diasRestantes = Math.ceil((fechaLimite - hoy) / (1000 * 60 * 60 * 24));
+        return acumulado + (diasRestantes > 0 ? diasRestantes : 0);
+      }, 0);
+    
+      const promedioDias = Math.round(totalDias / tareas.length);
+      return promedioDias > 0 ? `${promedioDias} días en promedio` : "Tareas vencidas";
+    };
+
+
+
+    const proximasTareas = [...tareas]
+    .filter(t => new Date(t.fecha_limite) >= new Date())
+    .sort((a, b) => new Date(a.fecha_limite) - new Date(b.fecha_limite))
+    .slice(0, 3);
+
+
+    const [modalConfirmareliperfil, setModalConfirmarEliPerfil] = useState(false);
+
+    const handleEliminarCuenta = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/usuario/${usuario.id}`, {
+          method: "DELETE",
+        });
   
+        if (res.ok) {
+          alert("Cuenta eliminada correctamente");
+          window.location.href = "/";
+        } else {
+          alert("Error al eliminar la cuenta");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+
+    const [mostrarModalOpcionesMenu, setMostrarModalOpcionesMenu] = useState(false);
+    const [modoOscuro, setModoOscuro] = useState(false);
+
+    const cambiarModo = () => {
+      setModoOscuro(!modoOscuro);
+      document.body.classList.toggle("modo-oscuro");
+    };
+
+    useEffect(() => {
+      if (mostrarModalGraficos || mostrarModal || tareaEditando || mostrarModalOpciones || mostrarModalOpcionesMenu) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "";
+      }
+    
+      return () => {
+        document.body.style.overflow = "";
+      };
+    }, [mostrarModalGraficos, mostrarModal, tareaEditando, mostrarModalOpciones, mostrarModalOpcionesMenu]);
+
+
+
+
+
+ 
 
   return  (
-    <div className="contenhome">
-      <div className="conten2home">
-        <ToastContainer />
-        <div className="titulo-opciones">
-          <div className="cjtitulo">
-            <h1 className="titulohome"><span>Bienvenido</span> <span className="titulohome2">a TaskFlow</span></h1>
-            <p className="text-gray-600 mt-2">Crea y gestiona tus tareas.</p>
-          </div>
-          <div className="cjopciones">
-            {/* 📌 Botones en PC */}
-            {!esMovil ? (
-              <>
-                <button className="btn-opciones" onClick={() => setMostrarModal(true)}>Perfil</button>
-                <button className="btn-opciones">Gráficos</button>
-                <button className="btn-opciones">Opciones</button>
-              </>
-            ) : (
-              // 📌 Botón de menú en móviles
-              <button 
-                className="btn-menu-movil" 
-                onClick={() => setMostrarModalOpciones(true)}
-              >
-                ☰ Menú
-              </button>
-            )}
+    <div>
+      {mostrarBienvenida && (
+        <div className="modal-bienvenida">
+          <h2>¡Bienvenido a TaskFlow!</h2>
+          <p>Esperamos que disfrutes la experiencia.</p>
+        </div>
+      )}
 
-            {/* 📌 Modal de opciones en móviles */}
-            {mostrarModalOpciones && (
-              <div className="modal">
-                <div className="modal-content">
-                  <h2>Menú</h2>
-                  <button className="btn-opciones" onClick={() => setMostrarModal(true)}>Perfil</button>
-                  <button className="btn-opciones" onClick={() => setMostrarModalOpciones(false)}>Gráficos</button>
-                  <button className="btn-opciones" onClick={() => setMostrarModalOpciones(false)}>Opciones</button>
-                  <button className="btn-cancelar-tarea" onClick={() => setMostrarModalOpciones(false)}>Cerrar</button>
+      {cargando && !mostrarBienvenida && (
+        <div className="pantalla-carga">
+          <p>Cargando...</p>
+        </div>
+      )}
+
+      {!cargando && !mostrarBienvenida && (
+        <div>
+          {/* Aquí va el contenido normal de la app */}
+          <div className="contenhome">
+            <div className="conten2home">
+              <ToastContainer />
+              <div className="titulo-opciones">
+                <div className="cjtitulo">
+                  <h1 className="titulohome"><span>Bienvenido</span> <span className="titulohome2">a TaskFlow</span></h1>
+                  <p className="text-gray-600 mt-2">Crea y gestiona tus tareas.</p>
+                </div>
+                <div className="cjopciones">
+                  {/* 📌 Botones en PC */}
+                  {!esMovil ? (
+                    <>
+                      <button className="btn-opciones" onClick={() => setMostrarModal(true)}>Perfil</button>
+                      <button className="btn-opciones" onClick={() => setMostrarModalGraficos(true)}>Gráficos</button>
+                      <button className="btn-opciones" onClick={() => setMostrarModalOpcionesMenu(true)}>Opciones</button>
+                    </>
+                  ) : (
+                    // 📌 Botón de menú en móviles
+                    <button 
+                      className="btn-menu-movil" 
+                      onClick={() => setMostrarModalOpciones(true)}
+                    >
+                      ☰ Menú
+                    </button>
+                  )}
+
+                  {/* 📌 Modal de opciones en móviles */}
+                  {mostrarModalOpciones && (
+                    <div className="modal">
+                      <div className="modal-content">
+                        <h2>Menú</h2>
+                        <button className="btn-opciones" onClick={() => {setMostrarModal(true);setMostrarModalOpciones(false);}}>Perfil</button>
+                        <button className="btn-opciones" onClick={() => {setMostrarModalGraficos(true);setMostrarModalOpciones(false);}}>Gráficos</button>
+                        <button className="btn-opciones" onClick={() => {setMostrarModalOpcionesMenu(true);setMostrarModalOpciones(false)}}>Opciones</button>
+                        <button className="btn-cancelar-tarea" onClick={() => setMostrarModalOpciones(false)}>Cerrar</button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* modal opciones */}
+                  {mostrarModalOpcionesMenu && (
+                    <div className="modal-opciones">
+                      <div className="modal-contenidoopciones">
+                        <h2>Opciones</h2>
+                        <div className="ContemOpciones">
+                        <label className="switch">
+                          <input type="checkbox" checked={modoOscuro} onChange={cambiarModo} />
+                          <span className="slider"></span>
+                        </label><p>Modo oscuro</p><br/>
+                        <a href="#">mas sobre TaskFlow</a>
+                        </div>
+                        
+                        <button onClick={() => setMostrarModalOpcionesMenu(false)}>Cerrar</button>
+                      </div>
+                    </div>
+                  )}
+
+
+                  {/* 📌 Modal de gráficos */}
+                  {mostrarModalGraficos && (
+                    <div className="modal">
+                      <div className="modal-content-graficos">
+                        <div className="modal-body">
+                          <div className="cjgf-caja1">
+                            <div className="cjgf-datos1">
+                              <h2>Datos De Tareas.</h2>
+                              <p><strong>Total de tareas:</strong> {totalTareas}</p>
+                              <p><strong>Tareas pendientes:</strong> {tareasPendientes}</p>
+                              <p><strong>Tareas vencidas:</strong> {tareasVencidas2}</p>
+
+                              <div className="proximas-tareas">
+                                <h2>Próximas tareas:</h2>
+                                {proximasTareas.length > 0 ? (
+                                  proximasTareas.map((tarea, index) => (
+                                    <div key={index} className="tarea-proxima">
+                                      <h3>{tarea.titulo}</h3>
+                                      <p>{formatearFecha(tarea.fecha_limite)}</p>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <p className="pnohay">No hay tareas próximas.</p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="cjgf-dato1g">
+                              {/* 📊 Gráfico de pastel */}
+                              <PieChart width={250} height={250}>
+                                <Pie 
+                                  data={data} 
+                                  cx="50%" 
+                                  cy="50%" 
+                                  outerRadius={80} 
+                                  fill="#8884d8" 
+                                  dataKey="value"
+                                  label
+                                  >
+                                  {data.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                  ))}
+                                </Pie>
+                                <Tooltip />
+                                <Legend />
+                              </PieChart>
+                            </div>
+                            <div className="cjgf-dato2">
+                              <h3>Estado de Tareas.</h3>
+                              <p className={`estado ${obtenerEstadoTareas().toLowerCase()}`}>
+                                {obtenerEstadoTareas()}
+                              </p>
+                            </div>
+                            <div className="cjgf-dato3">
+                                <h3>Tiempo Promedio.</h3>
+                                <p>{calcularPromedioDiasRestantes(tareas)}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <button className="btn-cerrar-graficos" onClick={() => setMostrarModalGraficos(false)}>Cerrar</button>
+                      </div>
+                    </div>
+                  )}
+
+
+                  {/* Modal-perfil */}
+                  {mostrarModal && usuario && (
+                    <div className="modal-perfil">
+                      <div className="modal-contenido-perfil">
+                        <h2>Perfil</h2>
+                        <p><strong>Nombre:</strong> {usuario.nombre}</p>
+                        <p><strong>Email:</strong> {usuario.email}</p>
+                        <p><strong>Edad:</strong> {usuario.edad}</p>
+
+                        <div className="modal-botones-perfil">
+                          <button onClick={() => setModalConfirmarEliPerfil(true)} className="btn-danger">Borrar cuenta</button>
+                          <button onClick={handleLogout} className="btn-logout">Desconectar</button>
+                          <button onClick={() => setMostrarModal(false)} className="btn-cerrar">Cancelar</button>
+
+                          {/* modal eleminar cuaneta */}
+                          {modalConfirmareliperfil && (
+                            <div className="modal">
+                              <div className="modal-content">
+                                <h3>❌ ¿Estás seguro de eliminar tu cuenta?</h3>
+                                <p>Esta acción es irreversible.</p>
+                                <button onClick={() => setModalConfirmarEliPerfil(false)}>Cancelar</button>
+                                <button onClick={handleEliminarCuenta} className="btn-danger">Sí, eliminar</button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                )}
+
                 </div>
               </div>
-            )}
 
-            {/* Modal-perfil */}
-            {mostrarModal && usuario && (
-              <div className="modal-perfil">
-                <div className="modal-contenido-perfil">
-                  <h2>Perfil</h2>
-                  <p><strong>Nombre:</strong> {usuario.nombre}</p>
-                  <p><strong>Email:</strong> {usuario.email}</p>
-                  <p><strong>Edad:</strong> {usuario.edad}</p>
+              <div className="opciones">
+                <button className="btn-nuevatarea" onClick={agregarTarea}>
+                  Nueva tarea
+                </button>
+              </div>
 
-                  <div className="modal-botones-perfil">
-                    <button onClick={() => setMostrarModal(false)} className="btn-cerrar">Cancelar</button>
-                    <button onClick={handleLogout} className="btn-logout">Desconectar</button>
+              
+              {/*modal-eliminar-opcion*/}
+              {mostrarModalEliminar && tareaAEliminar && (
+                <div className="modal">
+                  <div className="modal-content">
+                    <h2 className="modal-eliminar-titulo">⚠Confirmar eliminación</h2>
+                    <p>¿Estás seguro de que deseas finalizar la tarea <strong>{tareaAEliminar.titulo}</strong>?</p>
+                    
+                    <button onClick={() => {
+                      setMostrarModalEliminar(false);
+                      setTareaAEliminar(null);
+                    }} className="btn-cancelar-tarea">
+                      Cancelar
+                    </button>
+
+                    <button 
+                      onClick={() => {
+                        eliminarTarea(tareaAEliminar.id);
+                        setMostrarModalEliminar(false);
+                        setTareaAEliminar(null);
+                      }} 
+                      className="btn-guardar-tarea"
+                    >
+                      Confirmar
+                    </button>
                   </div>
                 </div>
+              )}
+
+
+              <div className="panel-cajas">
+              {tareas.length === 0 && (
+              <div className="tutorial">
+                <h3>📌 ¡No tienes tareas aún!</h3>
+                <p>Haz clic en "Nueva Tarea" para empezar a organizarte.</p>
               </div>
-          )}
+            )}
+                <div className="contenedor-cajas">
+                  <AnimatePresence>
+                    {tareas.map((tarea, index) => (
+                      <motion.div
+                        key={tarea.id}
+                        className={`caja ${new Date(tarea.fecha_limite) < new Date() ? "tarea-vencida" : ""}`}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.3 }}
+                        onClick={() => abrirEditor(tarea)}
+                      >
+                        <p className="contercj">{index + 1}</p>
+                        <h1>{tarea.titulo}</h1>
+                        <h2>{tarea.descripcion}</h2>
+                        <span>{formatearFecha(tarea.fecha_limite)}</span>
+                        <p>Prioridad: {tarea.prioridad}</p><br></br>
+                        <button 
+                          onClick={(e) => { 
+                            e.stopPropagation();
+                            setTareaAEliminar(tarea);
+                            setMostrarModalEliminar(true);
+                          }} 
+                          className="btn-eliminar-tr"
+                        >
+                          Finalizar
+                        </button>
 
-          </div>
-        </div>
-
-        <div className="opciones">
-          <button className="btn-nuevatarea" onClick={agregarTarea}>
-            Nueva tarea
-          </button>
-        </div>
-
-        
-        {/*modal-eliminar-opcion*/}
-        {mostrarModalEliminar && tareaAEliminar && (
-          <div className="modal">
-            <div className="modal-content">
-              <h2 className="modal-eliminar-titulo">⚠Confirmar eliminación</h2>
-              <p>¿Estás seguro de que deseas finalizar la tarea <strong>{tareaAEliminar.titulo}</strong>?</p>
-              
-              <button onClick={() => {
-                setMostrarModalEliminar(false);
-                setTareaAEliminar(null);
-              }} className="btn-cancelar-tarea">
-                Cancelar
-              </button>
-
-              <button 
-                onClick={() => {
-                  eliminarTarea(tareaAEliminar.id);
-                  setMostrarModalEliminar(false);
-                  setTareaAEliminar(null);
-                }} 
-                className="btn-guardar-tarea"
-              >
-                Confirmar
-              </button>
+                      
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </div>
+              <p className="copyright">Copyright © 2025 RHcorp®. All rights reserved.</p>
             </div>
-          </div>
-        )}
 
-
-        <div className="panel-cajas">
-          <div className="contenedor-cajas">
-            <AnimatePresence>
-              {tareas.map((tarea, index) => (
-                <motion.div
-                  key={tarea.id}
-                  className={`caja ${new Date(tarea.fecha_limite) < new Date() ? "tarea-vencida" : ""}`}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                  onClick={() => abrirEditor(tarea)}
-                >
-                  <p className="contercj">{index + 1}</p>
-                  <h1>{tarea.titulo}</h1>
-                  <h2>{tarea.descripcion}</h2>
-                  <span>{formatearFecha(tarea.fecha_limite)}</span>
-                  <p>Prioridad: {tarea.prioridad}</p><br></br>
-                  <button 
-                    onClick={(e) => { 
-                      e.stopPropagation();
-                      setTareaAEliminar(tarea);
-                      setMostrarModalEliminar(true);
-                    }} 
-                    className="btn-eliminar-tr"
-                  >
-                    Finalizar
-                  </button>
-
-                
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
-        </div>
-      </div>
-
-      {/* Modal-tareas */}
-      {tareaEditando !== null && (
-        <div className="modal">
-          <div className="modal-content">
-            <h2>Editar Tarea</h2>
-            <input type="text" name="titulo" value={formulario.titulo} onChange={manejarCambio} />
-            <input type="date" name="fecha_limite" value={formulario.fecha_limite} onChange={manejarCambio}/>
-            <select className="seleprioridad" name="prioridad" value={formulario.prioridad} onChange={manejarCambio}>
-              <option value="alta">Alta</option>
-              <option value="media">Media</option>
-              <option value="baja">Baja</option>
-            </select>
-            <textarea name="descripcion" value={formulario.descripcion} onChange={manejarCambio}></textarea>
-            <br></br>
-            <button onClick={cerrarEditor} className="btn-cancelar-tarea">Cancelar</button>
-            <button onClick={guardarCambios} className="btn-guardar-tarea">Guardar</button>
+            {/* Modal-tareas */}
+            {tareaEditando !== null && (
+              <div className="modal">
+                <div className="modal-content">
+                  <h2>Editar Tarea</h2>
+                  <input type="text" name="titulo" value={formulario.titulo} onChange={manejarCambio} />
+                  <input type="date" name="fecha_limite" value={formulario.fecha_limite} onChange={manejarCambio}/>
+                  <select className="seleprioridad" name="prioridad" value={formulario.prioridad} onChange={manejarCambio}>
+                    <option value="alta">Alta</option>
+                    <option value="media">Media</option>
+                    <option value="baja">Baja</option>
+                  </select>
+                  <textarea name="descripcion" value={formulario.descripcion} onChange={manejarCambio}></textarea>
+                  <br></br>
+                  <button onClick={cerrarEditor} className="btn-cancelar-tarea">Cancelar</button>
+                  <button onClick={guardarCambios} className="btn-guardar-tarea">Guardar</button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

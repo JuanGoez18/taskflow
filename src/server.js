@@ -34,7 +34,7 @@ bcrypt.hash("contraseña", 10, (err, hash) => {
 
 
 
-/*
+
 //función info conexion
 const testDBConnection = async () => {
   try {
@@ -62,7 +62,7 @@ const testDBConnection = async () => {
 };
 
 testDBConnection();
-*/
+
 
 
 /*
@@ -155,6 +155,24 @@ app.get("/usuario/:id", async (req, res) => {
   } catch (error) {
     console.error("Error al obtener usuario:", error);
     res.status(500).json({ error: "Error en el servidor" });
+  }
+});
+
+
+app.delete("/usuario/:id", async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const resultado = await pool.query("DELETE FROM usuarios WHERE id = $1", [id]);
+
+    if (resultado.rowCount === 0) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    res.json({ mensaje: "Usuario eliminado con éxito" });
+  } catch (error) {
+    console.error("Error al eliminar usuario:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 });
 

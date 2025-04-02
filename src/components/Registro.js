@@ -9,6 +9,8 @@ const Registro = ({ onClose }) => {
     contraseña: "",
   });
 
+  const [modalExito, setModalExito] = useState(false);
+
   const handleChange = (e) => {
     setFormulario({ ...formulario, [e.target.name]: e.target.value });
   };
@@ -24,8 +26,11 @@ const Registro = ({ onClose }) => {
       });
 
       if (res.ok) {
-        alert("Usuario registrado con éxito");
-        window.location.href = "/";
+        setModalExito(true);
+        setTimeout(() => {
+          setModalExito(false);
+          window.location.href = "/";
+        }, 3000);
       } else {
         alert("Error al registrar usuario");
       }
@@ -50,6 +55,16 @@ const Registro = ({ onClose }) => {
           </form>
         </div>
       </div>
+
+      {/* MODAL DE ÉXITO */}
+      {modalExito && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>✅ Registro exitoso</h3>
+            <p>Redirigiendo a la página principal...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
