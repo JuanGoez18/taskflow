@@ -688,9 +688,6 @@ input{
     text-align: center;
     gap: 10px;
     justify-content: center;
-  }
-
-  .modal-bienvenida p{
     color: #fff;
   }
 
@@ -707,6 +704,20 @@ input{
     font-family: 'Nunito', sans-serif;
     color: #fff;
     font-size: 25px;
+  }
+
+  .lapiz {
+    position: relative;
+    margin-bottom: 1%;
+  }
+  
+  .barra-carga {
+    height: 5px;
+    background-color: #fff;
+    width: 100%;
+    max-width: 200px;
+    margin-top: 10px;
+    border-radius: 2px;
   }
 
   .copyright{
@@ -741,7 +752,7 @@ input{
     background: #ADA8B6;
     width: 300px;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 15px;
     text-align: center;
     font-family: 'Quicksand', sans-serif;
   }
@@ -756,6 +767,10 @@ input{
     text-align: justify;
     font-weight: 500;
     font-family: 'Nunito', sans-serif;
+  }
+
+  .modal-contenidoopciones a {
+    color: #333;
   }
 
   .modal-contenidoopciones button{
@@ -852,6 +867,10 @@ input{
 
   .modo-oscuro .modal-contenidoopciones{
     background-color: #3c3b3f;
+  }
+
+  .modo-oscuro .modal-contenidoopciones a{
+    color: #fff;
   }
 
   .modo-oscuro .tutorial{

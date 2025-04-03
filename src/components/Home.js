@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, FlatTree } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
+import { FaPencilAlt } from "react-icons/fa";
 import "react-toastify/dist/ReactToastify.css";
 import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 
@@ -42,6 +43,7 @@ const Home = () => {
   const [usuario, setUsuario] = useState(null);
 
 useEffect(() => {
+  //funcion optener datos del usuario
   const obtenerDatosUsuario = async () => {
     try {
       const res = await fetch(`http://localhost:5000/usuario/${usuario_id}`);
@@ -57,6 +59,7 @@ useEffect(() => {
   obtenerDatosUsuario();
 }, []);
 
+  //funcion cerrar sesion
   const handleLogout = () => {
     const confirmar = window.confirm("¿Estás seguro de que deseas cerrar sesión?");
     if (confirmar) {
@@ -66,7 +69,7 @@ useEffect(() => {
     }
   };
 
-
+  //funcion validacion de sesion activa
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -77,6 +80,7 @@ useEffect(() => {
   }, [navigate]);
 
 
+  //funcion pantallas de carga
   useEffect(() => {
     if (!localStorage.getItem("primera_vez")) {
       setMostrarBienvenida(true);
@@ -85,7 +89,7 @@ useEffect(() => {
       setTimeout(() => {
         setMostrarBienvenida(false);
         setCargando(false);
-      }, 3000); 
+      }, 4000); 
     } else {
       setTimeout(() => {
         setCargando(false);
@@ -94,6 +98,7 @@ useEffect(() => {
   }, []);
   
 
+  //funciones de base de datos ################
   // 🔹 Cargar tareas desde la base de datos ✔
   const cargarTareas = async () => {
     try {
@@ -169,6 +174,9 @@ useEffect(() => {
     }
   };
 
+  //#####################################
+
+  //estados tareas
   const abrirEditor = (tarea) => {
     setTareaEditando(tarea.id);
     setFormulario(tarea);
@@ -182,6 +190,7 @@ useEffect(() => {
     setFormulario({ ...formulario, [e.target.name]: e.target.value });
   };
 
+  //formato fecha
   const formatearFecha = (fecha) => {
     return new Date(fecha).toLocaleDateString("es-ES", {
       year: "numeric",
@@ -190,7 +199,7 @@ useEffect(() => {
     });
   };
 
-
+  //funcion notificacion de tareas vencidas
   useEffect(() => {
     const hoy = new Date();
     const tareasNotificadas = JSON.parse(localStorage.getItem("tareasNotificadas")) || [];
@@ -226,12 +235,14 @@ useEffect(() => {
     setTareasVencidas(tareas.filter(t => new Date(t.fecha_limite) < hoy));
   }, [tareas]);
 
-
+  //estados modal eliminar tareas
   const [tareaAEliminar, setTareaAEliminar] = useState(null);
   const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
 
-
+  //estados modal opciones
   const [mostrarModalOpciones, setMostrarModalOpciones] = useState(false);
+
+  //funcion responsive boton opciones
   const [esMovil, setEsMovil] = useState(window.innerWidth < 768);
 
   useEffect(() => {
@@ -311,13 +322,23 @@ useEffect(() => {
       }
     };
 
-
     const [mostrarModalOpcionesMenu, setMostrarModalOpcionesMenu] = useState(false);
-    const [modoOscuro, setModoOscuro] = useState(false);
+    const [modoOscuro, setModoOscuro] = useState(() => {
+      return localStorage.getItem("modoOscuro") === "true";
+    });
 
+    useEffect(() => {
+      if (modoOscuro) {
+        document.body.classList.add("modo-oscuro");
+      } else {
+        document.body.classList.remove("modo-oscuro");
+      }
+    }, [modoOscuro]);
+    
     const cambiarModo = () => {
-      setModoOscuro(!modoOscuro);
-      document.body.classList.toggle("modo-oscuro");
+      const nuevoModo = !modoOscuro;
+      setModoOscuro(nuevoModo);
+      localStorage.setItem("modoOscuro", nuevoModo);
     };
 
     useEffect(() => {
@@ -342,14 +363,40 @@ useEffect(() => {
     <div>
       {mostrarBienvenida && (
         <div className="modal-bienvenida">
-          <h2>¡Bienvenido a TaskFlow!</h2>
-          <p>Esperamos que disfrutes la experiencia.</p>
-        </div>
+        <motion.h2 
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: [1, 1.1, 1], opacity: 1 }}
+          transition={{ duration: 2, ease: "easeOut"}}
+        >
+          ¡Bienvenido a TaskFlow!
+        </motion.h2>
+        <motion.p
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+        >
+          Esperamos que disfrutes la experiencia.
+        </motion.p>
+      </div>  
       )}
 
       {cargando && !mostrarBienvenida && (
         <div className="pantalla-carga">
-          <p>Cargando...</p>
+          <motion.div
+            initial={{ x: 20 }}
+            animate={{ x: 210 }}
+            transition={{ duration: 1.5, ease: "linear" }}
+            className="lapiz"
+          >
+            <FaPencilAlt size={30} color="#fff" />
+          </motion.div>
+          <motion.div
+            initial={{ width: "30%" }}
+            animate={{ width: "100%" }}
+            transition={{ duration: 0.1, ease: "linear" }}
+            className="barra-carga"
+          />
         </div>
       )}
 
@@ -490,7 +537,7 @@ useEffect(() => {
                         <div className="modal-botones-perfil">
                           <button onClick={() => setModalConfirmarEliPerfil(true)} className="btn-danger">Borrar cuenta</button>
                           <button onClick={handleLogout} className="btn-logout">Desconectar</button>
-                          <button onClick={() => setMostrarModal(false)} className="btn-cerrar">Cancelar</button>
+                          <button onClick={() => setMostrarModal(false)} className="btn-cerrar">Cerrar</button>
 
                           {/* modal eleminar cuaneta */}
                           {modalConfirmareliperfil && (

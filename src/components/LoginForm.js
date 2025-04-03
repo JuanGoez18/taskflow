@@ -33,7 +33,7 @@ const LoginForm = () => {
 
       // Redirigir según el tipo de usuario
       if (data.user.tipo === "admin") {
-        window.location.href = "/dashboard";
+        window.location.href = "/Dashboard";
       } else {
         window.location.href = "/Home";
       }
