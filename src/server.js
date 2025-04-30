@@ -222,11 +222,11 @@ app.get("/tareas/:usuario_id", async (req, res) => {
 
 // Crear tarea ######################################
 app.post("/tareas/:usuario_id", async (req, res) => {
-  const { titulo, descripcion, fecha_limite, prioridad, usuario_id } = req.body;
+  const { titulo, descripcion, fecha_limite, prioridad, usuario_id, estado, hora_notificacion, anticipacion } = req.body;
   try {
     const result = await pool.query(
-      "INSERT INTO tareas (titulo, descripcion, fecha_limite, prioridad, usuario_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-      [titulo, descripcion, fecha_limite, prioridad, usuario_id]
+      "INSERT INTO tareas (titulo, descripcion, fecha_limite, prioridad, usuario_id, estado, hora_notificacion, anticipacion) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+      [titulo, descripcion, fecha_limite, prioridad, usuario_id, estado ?? 0, hora_notificacion ?? null, anticipacion ?? null]
     );
     res.json(result.rows[0]);
   } catch (err) {
@@ -237,11 +237,11 @@ app.post("/tareas/:usuario_id", async (req, res) => {
 // Editar tarea ########################################
 app.put("/tareas/:id", async (req, res) => {
   const { id } = req.params;
-  const { titulo, descripcion, fecha_limite, prioridad } = req.body;
+  const { titulo, descripcion, fecha_limite, prioridad, estado, hora_notificacion, anticipacion } = req.body;
   try {
     const result = await pool.query(
-      "UPDATE tareas SET titulo=$1, descripcion=$2, fecha_limite=$3, prioridad=$4 WHERE id=$5 RETURNING *",
-      [titulo, descripcion, fecha_limite, prioridad, id]
+      "UPDATE tareas SET titulo=$1, descripcion=$2, fecha_limite=$3, prioridad=$4, estado=$5, hora_notificacion=$6, anticipacion=$7 WHERE id=$8 RETURNING *",
+      [titulo, descripcion, fecha_limite, prioridad, estado, hora_notificacion, anticipacion, id]
     );
     res.json(result.rows[0]);
   } catch (err) {

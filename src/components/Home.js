@@ -35,12 +35,23 @@ const Home = () => {
   const navigate = useNavigate();
   const [tareas, setTareas] = useState([]);
   const [tareaEditando, setTareaEditando] = useState(null);
-  const [formulario, setFormulario] = useState({ titulo: "", descripcion: "", fecha_limite: "", prioridad: "media" });
   const [mostrarModal, setMostrarModal] = useState(false);
   const [tareasVencidas, setTareasVencidas] = useState([]);
   const [mostrarBienvenida, setMostrarBienvenida] = useState(false);
   const [cargando, setCargando] = useState(true);
   const [usuario, setUsuario] = useState(null);
+  const [formulario, setFormulario] = useState({
+    titulo: "",
+    descripcion: "",
+    fecha_limite: "",
+    prioridad: "media",
+    estado: 0,
+    hora_notificacion: "",
+    anticipacion: "",
+  });
+
+
+    //#####################################
 
 useEffect(() => {
   //funcion optener datos del usuario
@@ -124,6 +135,9 @@ useEffect(() => {
         fecha_limite: fechaMañana,
         prioridad: "media",
         usuario_id: usuario_id,
+        estado: 0,
+        hora_notificacion: "08:00:00",
+        anticipacion: "1 hour"
       };
 
       const res = await fetch(`http://localhost:5000/tareas/${usuario_id}`, {
@@ -134,9 +148,8 @@ useEffect(() => {
 
       if (res.ok) {
         const tareaCreada = await res.json(); // Obtener la tarea creada con ID
-        setTareas([...tareas, tareaCreada]); // Agregar al estado
-        abrirEditor(tareaCreada);
-        //cargarTareas(); 
+        setTareas([...tareas, tareaCreada]);
+        abrirEditor(tareaCreada); 
       }
     } catch (error) {
       console.error("Error al agregar tarea:", error);
@@ -199,41 +212,128 @@ useEffect(() => {
     });
   };
 
-  //funcion notificacion de tareas vencidas
+  //formato fecha input
+  const formatearFechaInput = (fecha) => {
+    if (!fecha) return "";
+    const d = new Date(fecha);
+    const offset = d.getTimezoneOffset();
+    d.setMinutes(d.getMinutes() - offset);
+    return d.toISOString().split("T")[0];
+  };
+
+  //funcion notificacion de tareas ya vencidas
   useEffect(() => {
-    const hoy = new Date();
-    const tareasNotificadas = JSON.parse(localStorage.getItem("tareasNotificadas")) || [];
+    const ahora = new Date();
+    const notificados = JSON.parse(localStorage.getItem("tareasNotificadas")) || [];
   
     const nuevasTareasVencidas = tareas.filter((tarea) => {
-      const fechaTarea = new Date(tarea.fecha_limite);
-      const diferenciaDias = Math.ceil((fechaTarea - hoy) / (1000 * 60 * 60 * 24));
+      if (!tarea.fecha_limite || !tarea.hora_notificacion) return false;
   
-      if (diferenciaDias <= 0 && !tareasNotificadas.includes(tarea.id)) {
+      const fechaLimite = new Date(tarea.fecha_limite);
+      const fechaHoy = new Date();
+      fechaHoy.setHours(0, 0, 0, 0);
+      const fechaSolo = new Date(fechaLimite);
+      fechaSolo.setHours(0, 0, 0, 0);
+  
+      // CASO 1: Fecha pasada
+      if (fechaSolo < fechaHoy && !notificados.includes(tarea.id)) {
         return true;
       }
+  
+      // CASO 2: Fecha hoy y hora vencida
+      if (fechaSolo.getTime() === fechaHoy.getTime()) {
+        const [h, m, s] = tarea.hora_notificacion.split(":");
+        const fechaConHora = new Date(tarea.fecha_limite);
+        fechaConHora.setHours(Number(h), Number(m), Number(s || 0), 0);
+  
+        if (ahora >= fechaConHora && !notificados.includes(tarea.id)) {
+          return true;
+        }
+      }
+  
       return false;
     });
   
     if (nuevasTareasVencidas.length > 0) {
       nuevasTareasVencidas.forEach((tarea) => {
-        toast.warn(`La tarea "${tarea.titulo}" ha vencido.`, {
+        toast.warn(`⚠️ La tarea "${tarea.titulo}" ha vencido.`, {
           className: "toast-custom",
           position: "top-left",
           autoClose: 15000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
         });
       });
   
-      const idsNotificados = nuevasTareasVencidas.map((tarea) => tarea.id);
-      localStorage.setItem("tareasNotificadas", JSON.stringify([...tareasNotificadas, ...idsNotificados]));
+      const idsNotificados = nuevasTareasVencidas.map(t => t.id);
+      localStorage.setItem("tareasNotificadas", JSON.stringify([...notificados, ...idsNotificados]));
     }
   
-    setTareasVencidas(tareas.filter(t => new Date(t.fecha_limite) < hoy));
   }, [tareas]);
+
+  //funcion notificacion de tareas que van pronto a vencer
+  useEffect(() => {
+    const intervalo = setInterval(() => {
+      const ahora = new Date();
+      const notificados = JSON.parse(localStorage.getItem("tareasNotificadas2")) || [];
+  
+      const anticipacionAMinutos = (valor) => {
+        switch (valor) {
+          case "1 hour": return 60;
+          case "6 hour": return 360;
+          case "12 hour": return 720;
+          case "1 day": return 1440;
+          default: return 0;
+        }
+      };
+  
+      tareas.forEach((tarea) => {
+        if (!tarea.hora_notificacion || !tarea.anticipacion) return;
+  
+        const fechaSinHora = tarea.fecha_limite.split("T")[0];
+        const fechaCompleta = new Date(`${fechaSinHora}T${tarea.hora_notificacion}`);
+        const minutosAntes = anticipacionAMinutos(tarea.anticipacion);
+        const momentoNotificar = new Date(fechaCompleta.getTime() - minutosAntes * 60 * 1000);
+        console.log();
+  
+        if (ahora >= momentoNotificar && ahora < fechaCompleta && !notificados.includes(tarea.id)) {
+          toast.info(`🔔 Tarea: "${tarea.titulo}" próximamente vence`, {
+            className: "toast-custom2",
+            position: "top-left",
+            autoClose: 15000,
+          });
+  
+          notificados.push(tarea.id);
+          localStorage.setItem("tareasNotificadas2", JSON.stringify(notificados));
+        }
+      });
+    }, 10000);
+    return () => clearInterval(intervalo);
+  }, [tareas]);
+
+  //funcion color caja tareas vencidas
+  const esTareaVencida = (tarea) => {
+    if (!tarea.fecha_limite || !tarea.hora_notificacion) return false;
+  
+    const ahora = new Date();
+  
+    const fechaLimite = new Date(tarea.fecha_limite);
+    const fechaHoy = new Date();
+    fechaHoy.setHours(0, 0, 0, 0);
+    const fechaSolo = new Date(fechaLimite);
+    fechaSolo.setHours(0, 0, 0, 0);
+  
+    // Si es fecha pasada
+    if (fechaSolo < fechaHoy) return true;
+  
+    // Si es hoy y hora ya pasó
+    if (fechaSolo.getTime() === fechaHoy.getTime()) {
+      const [h, m, s] = tarea.hora_notificacion.split(":");
+      fechaLimite.setHours(Number(h), Number(m), Number(s || 0), 0);
+      return ahora >= fechaLimite;
+    }
+  
+    return false;
+  };
+
 
   //estados modal eliminar tareas
   const [tareaAEliminar, setTareaAEliminar] = useState(null);
@@ -606,7 +706,7 @@ useEffect(() => {
                     {tareas.map((tarea, index) => (
                       <motion.div
                         key={tarea.id}
-                        className={`caja ${new Date(tarea.fecha_limite) < new Date() ? "tarea-vencida" : ""}`}
+                        className={`caja ${esTareaVencida(tarea) ? "tarea-vencida" : ""}`}
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
@@ -644,7 +744,15 @@ useEffect(() => {
                 <div className="modal-content">
                   <h2>Editar Tarea</h2>
                   <input type="text" name="titulo" value={formulario.titulo} onChange={manejarCambio} />
-                  <input type="date" name="fecha_limite" value={formulario.fecha_limite} onChange={manejarCambio}/>
+                  <input type="date" name="fecha_limite" value={formatearFechaInput(formulario.fecha_limite)} onChange={manejarCambio} />
+                  <input type="time" name="hora_notificacion"value={formulario.hora_notificacion || ""} onChange={manejarCambio}/>
+                  <select className="seleanticipacion" name="anticipacion" value={formulario.anticipacion || ""} onChange={manejarCambio}>
+                    <option value="">Notificar anticipado</option>
+                    <option value="1 hour">1 hora antes</option>
+                    <option value="6 hour">6 horas antes</option>
+                    <option value="12 hour">12 horas antes</option>
+                    <option value="1 day">1 día antes</option>
+                  </select>
                   <select className="seleprioridad" name="prioridad" value={formulario.prioridad} onChange={manejarCambio}>
                     <option value="alta">Alta</option>
                     <option value="media">Media</option>

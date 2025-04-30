@@ -186,6 +186,7 @@ input{
     height: 85%;
     border-radius: 20px;
     padding: 2%;
+    font-family: 'Nunito', sans-serif;
 }
 
 .titulo-opciones{
@@ -428,7 +429,20 @@ input{
     border: none;
   }
 
+  .modal-content select{
+    font-family: 'Nunito', sans-serif;
+  }
+
   .modal-content .seleprioridad{
+    margin-bottom: 2%;
+    border: none;
+    min-height: 35px;
+    width: 80%;
+    border-radius: 14px;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .modal-content .seleanticipacion{
     margin-bottom: 2%;
     border: none;
     min-height: 35px;
@@ -460,7 +474,7 @@ input{
   }
 
 
-  .modal-perfil {
+  .modal-perfil{
     position: fixed;
     top: 0;
     left: 0;
@@ -472,7 +486,7 @@ input{
     align-items: center;
   }
 
-  .modal-contenido-perfil {
+  .modal-contenido-perfil{
     background: #ADA8B6;
     padding: 20px;
     border-radius: 20px;
@@ -480,11 +494,25 @@ input{
     width: 300px;
   }
 
+  .modal-contenido-perfil p{
+    background-color: #c8c1d3;
+    border-radius: 10px;
+    padding: 7px;
+    margin: 0;
+    margin-bottom: 5px;
+    color: #333;
+  }
+
+  .modal-contenido-perfil strong{
+    color: #111;
+  }
+
   .modal-botones-perfil button{
     min-width: 100px;
     height: 40px;
     font-size: 12px;
     font-family: 'Rubik', sans-serif;
+    background-color: #00c2f8;
   }
 
   .modal-botones-perfil .btn-cerrar{
@@ -496,7 +524,7 @@ input{
   }
 
   .modal-botones-perfil .btn-logout:hover{
-    background-color: #70d0eb;
+    background-color: #00c2f8;
   }
   
   .modal-botones-perfil .btn-cerrar{
@@ -523,7 +551,16 @@ input{
 
 
   .toast-custom {
-    background: #71078b !important;
+    background: #753d83 !important;
+    color: #ffffff !important;
+    font-weight: bold;
+    border-left: 5px solid #550569;
+    padding: 12px;
+    border-radius: 25px;
+  }
+
+  .toast-custom2 {
+    background: #27a9c9 !important;
     color: #ffffff !important;
     font-weight: bold;
     border-left: 5px solid #550569;
@@ -576,7 +613,7 @@ input{
     width: 50%;
     padding: 10px;
     border-radius: 10px;
-    background-color: #6a00c6;
+    background-color: #644c83;
     font-size: 14px;
     justify-content: center;
     align-items: center;
@@ -603,14 +640,14 @@ input{
     width: 50%;
     height: 250px;
     border-radius: 10px;
-    background-color: #6a00c6;
+    background-color: #644c83;
     font-size: 10px;
   }
 
   .cjgf-dato2 {
     width: 50%;
     border-radius: 10px;
-    background-color: #6a00c6;
+    background-color: #644c83;
     padding: 10px;
   }
 
@@ -627,7 +664,7 @@ input{
   .cjgf-dato3 {
     width: 50%;
     border-radius: 10px;
-    background-color: #6a00c6;
+    background-color: #644c83;
     padding: 10px;
   }
 
@@ -666,8 +703,8 @@ input{
   }
 
   .tarea-proxima{
-    width: 18%;
-    margin-left: 3%;
+    width: 100%;
+    margin-left: 2%;
     align-items: self-end;
     white-space: nowrap;
     overflow: hidden;
@@ -775,6 +812,11 @@ input{
 
   .modal-contenidoopciones button{
     margin-top: 5%;
+    background-color: #f80057;
+  }
+
+  .modal-contenidoopciones button:hover{
+    background-color: #cf1e5c;
   }
 
 
@@ -875,6 +917,35 @@ input{
 
   .modo-oscuro .tutorial{
     background-color: #3c3b3f;
+  }
+
+  .modo-oscuro .cjgf-datos1{
+    background-color: #2f2e31;
+  }
+
+  .modo-oscuro .cjgf-dato1g{
+    background-color: #2f2e31;
+  }
+
+  .modo-oscuro .cjgf-dato2{
+    background-color: #2f2e31;
+  }
+
+  .modo-oscuro .cjgf-dato3{
+    background-color: #2f2e31;
+  }
+
+  .modo-oscuro .modal-content h2{
+    color: #fff;
+  }
+
+  .modo-oscuro .modal-contenido-perfil p{
+    background-color: #525252;
+    color: #000;
+  }
+
+  .modo-oscuro .modal-contenido-perfil strong{
+    color: #000;
   }
 
 
@@ -994,4 +1065,167 @@ input{
       width: 90%;
     }
 
+}
+
+
+/*##################################################*/
+
+
+.all-dashboard{
+  margin: 1%;
+  background-color: #dfd9e7;
+  border-radius: 15px;
+  padding: 10px;
+  font-family: 'Nunito', sans-serif;
+}
+
+.conteneor-dashboard1,.conteneor-dashboard2{
+  margin: 0;
+  margin-top: -1%;
+  background-color: #f1f1f1;
+  border-radius: 15px;
+  padding: 15px;
+}
+
+.dashboard-title{
+  font-family: 'Nunito', sans-serif;
+    color: #4A008B;
+    font-weight: 900;
+    font-size: 40px;
+}
+
+.seleccion-titulo{
+  margin-top: 1%;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.seccion-links{
+  background-color: #f1f1f1;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.seccion-links a{
+  background-color: #cccccc50;
+  border-radius: 10px;
+  padding: 2px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.seccion-links a:hover{
+  transform: scale(2.0);
+  background-color: #cccccc;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.all-dashboard .seccion-opciones{
+  margin-top: 2%;
+  margin-right: 1%;
+  float: right;
+}
+
+.seccion-opciones button{
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 400;
+  background-color: #00c2f8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 600;
+  color: #333;
+}
+
+.seccion-opciones button:hover{
+  background-color: #73d3ed;
+  transform: scale(1.02);
+  cursor: pointer;
+}
+
+.conteneor-dashboard1{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.conteneor-dashboard1 > div {
+  flex: 1 1 calc(10.33% - 10px);
+  min-width: 100px;
+  max-width: 350px;
+}
+
+.conteneor-dashboard2{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.conteneor-dashboard2 > div {
+  flex: 1 1 calc(40.33% - 10px);
+  min-width: 200px;
+  max-width: 580px;
+}
+
+.dashcaja1{
+  background-color: #386ee0;
+  border-radius: 15px;
+  padding: 5px;
+}
+
+
+.dashcaja2{
+  background-color: #19aedb;
+  border-radius: 15px;
+  padding: 5px;
+}
+
+.dashcaja3{
+  background-color: #bb19db;
+  border-radius: 15px;
+  padding: 5px;
+}
+
+.dashcaja4{
+  background-color: #19dba1;
+  border-radius: 15px;
+  padding: 5px;
+}
+
+.dashcaja5, .dashcaja6, .dashcaja7, .dashcaja8{
+  background-color: #b3c8d6;
+  border-radius: 15px;
+  padding: 5px;
+  width: 95%;
+}
+
+.user-contem h2{
+  font-family: 'Quicksand', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.user-contem p{
+  font-family: 'Nunito', sans-serif;
+  font-size: 17px;
+  font-weight: 900;
+  color: #f1f1f1;
+}
+
+@media (max-width: 570px) {
+  .conteneor-dashboard2{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 }
