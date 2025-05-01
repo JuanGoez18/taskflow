@@ -871,8 +871,10 @@ input{
 
   .modal-contenidoopciones p {
     text-align: justify;
-    font-weight: 500;
+    font-weight: 600;
     font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    margin: 0;
   }
 
   .modal-contenidoopciones a {
@@ -966,6 +968,14 @@ input{
 
   .modo-oscuro .modal-contenido-perfil {
     background: #3c3b3f;
+  }
+
+  .modo-oscuro .modal-contenido-perfil strong{
+    color: #fff !important;
+  }
+
+  .modo-oscuro .modal-contenido-perfil p{
+    color: #fff !important;
   }
 
   .modo-oscuro .modal-content {

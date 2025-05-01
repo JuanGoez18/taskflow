@@ -36,7 +36,6 @@ const Home = () => {
   const [tareas, setTareas] = useState([]);
   const [tareaEditando, setTareaEditando] = useState(null);
   const [mostrarModal, setMostrarModal] = useState(false);
-  const [tareasVencidas, setTareasVencidas] = useState([]);
   const [mostrarBienvenida, setMostrarBienvenida] = useState(false);
   const [cargando, setCargando] = useState(true);
   const [usuario, setUsuario] = useState(null);
@@ -45,6 +44,9 @@ const Home = () => {
   const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
   const [mostrarModalOpciones, setMostrarModalOpciones] = useState(false);
   const [mostrarModalOpcionesMenu, setMostrarModalOpcionesMenu] = useState(false);
+  const [modoOrdenamiento, setModoOrdenamiento] = useState(() => {
+    return localStorage.getItem("modoOrdenamiento") || "fecha";
+  });
   const [formulario, setFormulario] = useState({
     titulo: "",
     descripcion: "",
@@ -383,8 +385,9 @@ useEffect(() => {
 
     //⭕ Contar tareas
     const totalTareas = tareas.length;
-    const tareasPendientes = tareas.filter(t => new Date(t.fecha_limite) >= new Date()).length;
-    const tareasVencidas2 = tareas.filter(t => new Date(t.fecha_limite) < new Date()).length;
+    const tareasPendientes = tareas.filter(t => new Date(t.fecha_limite) >= new Date() && t.estado === 0).length;
+    
+    const tareasVencidas2 = tareas.filter(t => new Date(t.fecha_limite) < new Date() && t.estado === 0).length;
 
     //⭕ colores grafica de pastel
     const data = [
@@ -494,6 +497,44 @@ useEffect(() => {
       };
     }, [mostrarModalGraficos, mostrarModal, tareaEditando, mostrarModalOpciones, mostrarModalOpcionesMenu]);
 
+    //funcion para ordenar tareas por hora y fecha o por prioridad
+    const ordenarTareas = (tareas, modo) => {
+      return [...tareas].sort((a, b) => {
+        const fechaHoraA = new Date(`${a.fecha_limite.split("T")[0]}T${a.hora_notificacion}`);
+        const fechaHoraB = new Date(`${b.fecha_limite.split("T")[0]}T${b.hora_notificacion}`);
+    
+        if (modo === "fecha") {
+          // Primero por fecha + hora, luego por prioridad
+          if (fechaHoraA.getTime() !== fechaHoraB.getTime()) {
+            return fechaHoraA - fechaHoraB;
+          }
+          return prioridadValor(a.prioridad) - prioridadValor(b.prioridad);
+        } else {
+          // Primero por prioridad, luego por fecha + hora
+          if (prioridadValor(a.prioridad) !== prioridadValor(b.prioridad)) {
+            return prioridadValor(a.prioridad) - prioridadValor(b.prioridad);
+          }
+          return fechaHoraA - fechaHoraB;
+        }
+      });
+    };
+    
+    const prioridadValor = (prioridad) => {
+      switch (prioridad) {
+        case "alta": return 1;
+        case "media": return 2;
+        case "baja": return 3;
+        default: return 4;
+      }
+    };
+
+  const tareasOrdenadas = ordenarTareas(tareas, modoOrdenamiento);
+
+  //guardar estado de modo de ordenamiento 
+  useEffect(() => {
+    localStorage.setItem("modoOrdenamiento", modoOrdenamiento);
+  }, [modoOrdenamiento]);
+
 
 
 
@@ -589,10 +630,24 @@ useEffect(() => {
                       <div className="modal-contenidoopciones">
                         <h2>Opciones</h2>
                         <div className="ContemOpciones">
+
                         <label className="switch">
                           <input type="checkbox" checked={modoOscuro} onChange={cambiarModo} />
                           <span className="slider"></span>
                         </label><p>Modo oscuro</p><br/>
+
+                        <label className="switch">
+                          <input
+                            type="checkbox"
+                            checked={modoOrdenamiento === "fecha"}
+                            onChange={(e) =>
+                              setModoOrdenamiento(e.target.checked ? "fecha" : "prioridad")
+                            }
+                          />
+                          <span className="slider"></span>
+                        </label>
+                        <p>Orden por {modoOrdenamiento === "fecha" ? "fecha" : "prioridad"}</p><br />
+
                         <a href="#">mas sobre TaskFlow</a>
                         </div>
                         
@@ -744,7 +799,7 @@ useEffect(() => {
             )}
                 <div className="contenedor-cajas">
                   <AnimatePresence>
-                    {tareas.map((tarea, index) => (
+                    {tareasOrdenadas.map((tarea, index) => (
                       <motion.div
                         key={tarea.id}
                         className={`caja 
