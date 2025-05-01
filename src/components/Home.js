@@ -40,6 +40,11 @@ const Home = () => {
   const [mostrarBienvenida, setMostrarBienvenida] = useState(false);
   const [cargando, setCargando] = useState(true);
   const [usuario, setUsuario] = useState(null);
+  const [modalConfirmareliperfil, setModalConfirmarEliPerfil] = useState(false);
+  const [tareaAEliminar, setTareaAEliminar] = useState(null);
+  const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
+  const [mostrarModalOpciones, setMostrarModalOpciones] = useState(false);
+  const [mostrarModalOpcionesMenu, setMostrarModalOpcionesMenu] = useState(false);
   const [formulario, setFormulario] = useState({
     titulo: "",
     descripcion: "",
@@ -51,7 +56,7 @@ const Home = () => {
   });
 
 
-    //#####################################
+  //#####################################
 
 useEffect(() => {
   //funcion optener datos del usuario
@@ -109,7 +114,7 @@ useEffect(() => {
   }, []);
   
 
-  //funciones de base de datos ################
+  //funciones de Databases ################
   // 🔹 Cargar tareas desde la base de datos ✔
   const cargarTareas = async () => {
     try {
@@ -228,6 +233,7 @@ useEffect(() => {
   
     const nuevasTareasVencidas = tareas.filter((tarea) => {
       if (!tarea.fecha_limite || !tarea.hora_notificacion) return false;
+      if (tarea.estado === 1) return false;
   
       const fechaLimite = new Date(tarea.fecha_limite);
       const fechaHoy = new Date();
@@ -286,7 +292,7 @@ useEffect(() => {
       };
   
       tareas.forEach((tarea) => {
-        if (!tarea.hora_notificacion || !tarea.anticipacion) return;
+        if (!tarea.hora_notificacion || !tarea.anticipacion || tarea.estado === 1) return;
   
         const fechaSinHora = tarea.fecha_limite.split("T")[0];
         const fechaCompleta = new Date(`${fechaSinHora}T${tarea.hora_notificacion}`);
@@ -334,13 +340,29 @@ useEffect(() => {
     return false;
   };
 
+  //funcion finalizar tareas
+  const marcarComoFinalizada = async (id) => {
+    try {
+      const respuesta = await fetch(`http://localhost:5000/tareas/${id}/finalizar`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ estado: 1 })
+      });
+  
+      if (!respuesta.ok) throw new Error("Error al finalizar tarea");
+  
+      // Actualiza las tareas localmente
+      const tareasActualizadas = tareas.map((tarea) =>
+        tarea.id === id ? { ...tarea, estado: 1 } : tarea
+      );
+      setTareas(tareasActualizadas);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
-  //estados modal eliminar tareas
-  const [tareaAEliminar, setTareaAEliminar] = useState(null);
-  const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
-
-  //estados modal opciones
-  const [mostrarModalOpciones, setMostrarModalOpciones] = useState(false);
 
   //funcion responsive boton opciones
   const [esMovil, setEsMovil] = useState(window.innerWidth < 768);
@@ -354,32 +376,36 @@ useEffect(() => {
     return () => window.removeEventListener("resize", manejarResize);
   }, []);
 
-
+  //#######################################################################
+  //variables seccion graficos
+  
   const [mostrarModalGraficos, setMostrarModalGraficos] = useState(false);
 
-    // 📌 Contar tareas
+    //⭕ Contar tareas
     const totalTareas = tareas.length;
     const tareasPendientes = tareas.filter(t => new Date(t.fecha_limite) >= new Date()).length;
     const tareasVencidas2 = tareas.filter(t => new Date(t.fecha_limite) < new Date()).length;
 
+    //⭕ colores grafica de pastel
     const data = [
       { name: "Pendientes", value: tareasPendientes, color: "#00c2f8" },
       { name: "Vencidas", value: tareasVencidas2, color: "#f80057" },
     ];
 
+    //⭕ estado segun la cantidad de tareas pendientes
     const obtenerEstadoTareas = () => {
       const totalTareas = tareas.length;
-      const tareasPendientes = tareas.filter(t => new Date(t.fecha_limite) >= new Date()).length;
+      const tareasPendientes2 = tareas.filter(t => new Date(t.fecha_limite) >= new Date()).length;
 
-      if (totalTareas === 0) return "Sin tareas";  
-      if (tareasPendientes === 2) return "Relax";  
-      if (tareasPendientes <= 4) return "Bueno";  
-      if (tareasPendientes <= 6) return "Regular";  
-      if (tareasPendientes <= 9) return "Ajetreado";  
+      if (totalTareas === 0) return "Sin tareas";
+      if (tareasPendientes2 <= 4) return "Relax";
+      if (tareasPendientes2 <= 6) return "Bueno";
+      if (tareasPendientes2 <= 9) return "Regular";
+      if (tareasPendientes2 <= 14) return "Ajetreado";
       return "Crítico";
     };
 
-
+    //⭕ promedio de dias segun cntidad de tareas pendientes
     const calcularPromedioDiasRestantes = (tareas) => {
       if (tareas.length === 0) return "Sin tareas activas";
     
@@ -396,15 +422,28 @@ useEffect(() => {
     };
 
 
-
+    //⭕ que tarea sigue segun su fecha limite
+    const ahora = new Date();
     const proximasTareas = [...tareas]
-    .filter(t => new Date(t.fecha_limite) >= new Date())
-    .sort((a, b) => new Date(a.fecha_limite) - new Date(b.fecha_limite))
-    .slice(0, 3);
+      .filter(t => {
+        if (!t.fecha_limite || !t.hora_notificacion || t.estado === 1) return false;
+
+        const fechaSinHora = t.fecha_limite.split("T")[0];
+        const fechaCompleta = new Date(`${fechaSinHora}T${t.hora_notificacion}`);
+
+        return fechaCompleta >= ahora;
+      })
+      .sort((a, b) => {
+        const fechaA = new Date(`${a.fecha_limite.split("T")[0]}T${a.hora_notificacion}`);
+        const fechaB = new Date(`${b.fecha_limite.split("T")[0]}T${b.hora_notificacion}`);
+        return fechaA - fechaB;
+      })
+      .slice(0, 3);
 
 
-    const [modalConfirmareliperfil, setModalConfirmarEliPerfil] = useState(false);
-
+    //###############################################################################
+    //OTRAS FUNCIONES
+    //🛑funcion eliminar cuenta
     const handleEliminarCuenta = async () => {
       try {
         const res = await fetch(`http://localhost:5000/usuario/${usuario.id}`, {
@@ -422,11 +461,12 @@ useEffect(() => {
       }
     };
 
-    const [mostrarModalOpcionesMenu, setMostrarModalOpcionesMenu] = useState(false);
+    //guardar estado de modo oscuro
     const [modoOscuro, setModoOscuro] = useState(() => {
       return localStorage.getItem("modoOscuro") === "true";
     });
 
+    //funcion para activar o desactivar el modo oscuro
     useEffect(() => {
       if (modoOscuro) {
         document.body.classList.add("modo-oscuro");
@@ -440,7 +480,8 @@ useEffect(() => {
       setModoOscuro(nuevoModo);
       localStorage.setItem("modoOscuro", nuevoModo);
     };
-
+    
+    //bloquear scroll dentro de los modals
     useEffect(() => {
       if (mostrarModalGraficos || mostrarModal || tareaEditando || mostrarModalOpciones || mostrarModalOpcionesMenu) {
         document.body.style.overflow = "hidden";
@@ -630,7 +671,7 @@ useEffect(() => {
                     <div className="modal-perfil">
                       <div className="modal-contenido-perfil">
                         <h2>Perfil</h2>
-                        <p><strong>Nombre:</strong> {usuario.nombre}</p>
+                        <p><strong>Nombre:</strong> {usuario.nombre+" "+usuario.apellido}</p>
                         <p><strong>Email:</strong> {usuario.email}</p>
                         <p><strong>Edad:</strong> {usuario.edad}</p>
 
@@ -639,7 +680,7 @@ useEffect(() => {
                           <button onClick={handleLogout} className="btn-logout">Desconectar</button>
                           <button onClick={() => setMostrarModal(false)} className="btn-cerrar">Cerrar</button>
 
-                          {/* modal eleminar cuaneta */}
+                          {/* Modal eleminar cuaneta */}
                           {modalConfirmareliperfil && (
                             <div className="modal">
                               <div className="modal-content">
@@ -706,7 +747,9 @@ useEffect(() => {
                     {tareas.map((tarea, index) => (
                       <motion.div
                         key={tarea.id}
-                        className={`caja ${esTareaVencida(tarea) ? "tarea-vencida" : ""}`}
+                        className={`caja 
+                          ${esTareaVencida(tarea) ? "tarea-vencida" : ""} 
+                          ${tarea.estado === 1 ? "finalizada" : ""}`}
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
@@ -717,7 +760,20 @@ useEffect(() => {
                         <h1>{tarea.titulo}</h1>
                         <h2>{tarea.descripcion}</h2>
                         <span>{formatearFecha(tarea.fecha_limite)}</span>
-                        <p>Prioridad: {tarea.prioridad}</p><br></br>
+                        <p>Nivel de Prioridad {tarea.prioridad}</p><br></br>
+                        {tarea.estado === 0 && new Date(`${tarea.fecha_limite.split("T")[0]}T${tarea.hora_notificacion}`) > new Date() && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            marcarComoFinalizada(tarea.id);
+                          }}
+                          className="btn-finalizar-tr"
+                        >
+                          Finalizar
+                        </button>
+                      )}
+                        {tarea.estado === 1 && <span className="messagefinalizada">✔ Finalizada</span>}
+                        
                         <button 
                           onClick={(e) => { 
                             e.stopPropagation();
@@ -726,10 +782,8 @@ useEffect(() => {
                           }} 
                           className="btn-eliminar-tr"
                         >
-                          Finalizar
+                          Borrar
                         </button>
-
-                      
                       </motion.div>
                     ))}
                   </AnimatePresence>
@@ -747,7 +801,7 @@ useEffect(() => {
                   <input type="date" name="fecha_limite" value={formatearFechaInput(formulario.fecha_limite)} onChange={manejarCambio} />
                   <input type="time" name="hora_notificacion"value={formulario.hora_notificacion || ""} onChange={manejarCambio}/>
                   <select className="seleanticipacion" name="anticipacion" value={formulario.anticipacion || ""} onChange={manejarCambio}>
-                    <option value="">Notificar anticipado</option>
+                    <option value="">No anticipar</option>
                     <option value="1 hour">1 hora antes</option>
                     <option value="6 hour">6 horas antes</option>
                     <option value="12 hour">12 horas antes</option>

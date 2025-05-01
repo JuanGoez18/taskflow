@@ -83,9 +83,9 @@ obtenerUsuarios(); */
 
 
 //SERVICIOS########################################################################
+// #USUARIO------------------------------------------------------------------------
 
-
-//Registrar un nuevo usuario*********************************************
+//Registrar un nuevo usuario*******************************************************
 app.post("/registro", async (req, res) => {
   const { nombre, apellido, email, edad, contraseña } = req.body;
 
@@ -151,7 +151,7 @@ app.get("/usuario/:id", async (req, res) => {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
-    res.json(usuario.rows[0]); // Enviar el usuario encontrado
+    res.json(usuario.rows[0]);
   } catch (error) {
     console.error("Error al obtener usuario:", error);
     res.status(500).json({ error: "Error en el servidor" });
@@ -177,26 +177,10 @@ app.delete("/usuario/:id", async (req, res) => {
 });
 
 
-/*
-// **3. Ruta protegida de prueba**
-app.get("/perfil", (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1];         POSIBLE ELIMINAR
-
-  if (!token) {
-    return res.status(403).json({ message: "Acceso denegado" });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    res.json({ message: "Acceso permitido", user: decoded });
-  } catch (error) {
-    res.status(401).json({ message: "Token inválido" });
-  }
-}); */
 
 
-
-// Obtener tareas ###################################
+// #FUNCIONES TAREAS---------------------------------------------------------------
+// Obtener tareas #################################################################
 app.get("/tareas/:usuario_id", async (req, res) => {
   const { usuario_id } = req.params;
   try {
@@ -263,4 +247,18 @@ app.delete("/tareas/:id", async (req, res) => {
 
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
+});
+
+
+// Finalizar tarea tarea #########################################
+app.put("/tareas/:id/finalizar", async (req, res) => {
+  const { id } = req.params;
+  const { estado } = req.body;
+  try {
+    await pool.query("UPDATE tareas SET estado = $1 WHERE id = $2", [estado, id]);
+    res.json({ mensaje: "Tarea finalizada correctamente" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al actualizar el estado de la tarea" });
+  }
 });
