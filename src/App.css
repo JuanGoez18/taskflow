@@ -349,6 +349,10 @@ input{
     color: #FFEEDB;
 }
 
+.tarea-vencida .btn-eliminar-tr{
+  margin-right: 5px;
+}
+
 .finalizada{
   width: 100%;
   max-width: 250px;
@@ -376,7 +380,7 @@ input{
   color: #fff;
 }
 
-.caja .messagefinalizada{
+.messagefinalizada{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -753,13 +757,20 @@ input{
     width: 100%;
     font-size: 9px;
     font-weight: 500;
-    text-align: start;
+    text-align: center;
+    margin-top: 30px;
+  }
+
+  .proximas-tareas h2{
+    margin: 0;
+    margin-top: 4px;
+    justify-content: center;
   }
 
   .proximas-tareas h3{
     color: #fff;
-    margin-left: 10px;
-    margin: 5px;
+    margin: 0;
+    margin-top: 5px;
   }
 
   .proximas-tareas .pnohay{
@@ -768,7 +779,7 @@ input{
   }
 
   .proximas-tareas p{
-    align-items: start;
+    align-items: center;
   }
 
   .tarea-proxima{
@@ -1053,7 +1064,7 @@ input{
 
 
 
-@media (max-width: 570px) {
+@media (max-width: 571px) {
  
     .titulohome{
         text-align: center;
@@ -1066,50 +1077,59 @@ input{
     }
 
     .contenedor-cajas {
-        grid-template-columns: repeat(auto-fit, minmax(150px, auto));
+        grid-template-columns: repeat(auto-fit, minmax(170px, auto));
     }
 
     .caja {
         width: 100%;
-        max-width: 142px;
+        max-width: 158px;
         font-size: 10px;
     }
 
+    .btn-finalizar-tr{
+      margin-right: 12px;
+    }
+
+    .tarea-vencida .btn-eliminar-tr{
+      margin-right: 0;
+    }
 
     .titulo-opciones{
-        display: flex;
+      display: flex;
     }
 
     .opciones{
-        display: flex;
-        justify-content: center;
-        padding: 2%;
+      display: flex;
+      justify-content: center;
+      padding: 2%;
     }
 
     .titulo-opciones .cjtitulo .cjopciones{
-        min-width: 50%;
+      min-width: 50%;
     }
 
     .panel-cajas{
-        min-height: 200px;
+      min-height: 200px;
+      margin: 0;
+      padding: 0;
     }
 
     .cjgf-caja1 > div {
-        flex: 1 1 100%;
+      flex: 1 1 100%;
     }
 
     .modal-content-graficos {
-        margin-top: 5%;
+      margin-top: 5%;
 
     }
 
     .modal-content-graficos .btn-cerrar-graficos{
-        margin-top: 5%;
-        height: 50px;
+      margin-top: 5%;
+      height: 50px;
       }
 
       .modal-content-graficos {
-        width: 80%;
+      width: 80%;
       }
 }
 
@@ -1117,23 +1137,27 @@ input{
   
 
 
-@media (max-width: 344px) {
+@media (max-width: 354px) {
     
     .contenedor-cajas {
-        grid-template-columns: repeat(auto-fit, minmax(100%, auto));
+      grid-template-columns: repeat(auto-fit, minmax(100%, auto));
     }
 
     .caja {
-        width: 100%;
-        max-width: 94%;
-        height: 100%;
-        max-height: 165px;
-        font-size: 9px;
+      width: 100%;
+      max-width: 94%;
+      height: 100%;
+      max-height: 165px;
+      font-size: 9px;
     }
 
     .btn-eliminar-tr{
-        padding: 0;
-        margin: 0;
+      padding: 0;
+      margin: 0;
+    }
+
+    .btn-finalizar-tr{
+      margin: 0;
     }
 
     .titulohome, .titulohome2{
@@ -1149,8 +1173,13 @@ input{
 
 /*##################################################*/
 
+.dashboard-wrapper{
+  display: flex;
+  justify-content: center;
+}
 
 .all-dashboard{
+  width: 100%;
   margin: 1%;
   background-color: #dfd9e7;
   border-radius: 15px;
@@ -1158,7 +1187,7 @@ input{
   font-family: 'Nunito', sans-serif;
 }
 
-.conteneor-dashboard1,.conteneor-dashboard2{
+.conteneor-dashboard1, .conteneor-dashboard2, .conteneor-dashboard3{
   margin: 0;
   margin-top: -1%;
   background-color: #f1f1f1;
@@ -1252,7 +1281,7 @@ input{
 .conteneor-dashboard2 > div {
   flex: 1 1 calc(40.33% - 10px);
   min-width: 200px;
-  max-width: 580px;
+  max-width: 1000px;
 }
 
 .dashcaja1{
@@ -1301,10 +1330,198 @@ input{
   color: #f1f1f1;
 }
 
+.contUsuarios{
+  display: flex;
+}
+
+.contUsuarios p{
+  margin-right: 10px;
+}
+
+.any-contem{
+  background-color: #e47f21;
+  border-radius: 15px;
+  padding: 5px;
+  width: 99%;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.any-contem p{
+  margin-left: 10px;
+}
+
 @media (max-width: 570px) {
   .conteneor-dashboard2{
     display: flex;
     flex-direction: column;
     align-items: center;
   }
+}
+
+@media (min-width: 1600px) {
+  .all-dashboard{
+    max-width: 2000px;
+  }
+}
+
+
+
+/*######################################*/
+
+strong{
+  color: #c64aff;
+}
+
+.titulohome a{
+  text-decoration: none;
+  margin-right: 5px;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.titulohome a:hover{
+  transform: translateY(-3px);
+}
+
+.titulos{
+  font-family: 'Nunito', sans-serif;
+  color: #4A008B;
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.texts{
+  font-family: 'Nunito', sans-serif;
+  color: #333;
+  font-size: 17px;
+}
+
+.texto-bajotitulo{
+  color: #111;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: 'Nunito', sans-serif;
+}
+
+.intro-infotask{
+  max-width: 700px;
+  font-family: 'Nunito', sans-serif;
+  color: #333;
+}
+
+.feedback-estrellascontem {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.estrella {
+  font-size: 2rem;
+  color: gray;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.estrella.activa {
+  color: #f80057;
+}
+
+.estrallas:hover{
+  background-color: #cf1e5c;
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+.textarea-comentario{
+  border: none;
+  margin-top: 10px;
+  border-radius: 10px;
+  padding: 5px;
+  background-color: #f1f1f1;
+  width: 300px;
+  height: 100px;
+}
+
+.boton-feedback{
+  width: 180px;
+  height: 30px;
+  border: none;
+  border-radius: 10px;
+  background-color: #00c2f8;
+  color: #fff;
+  font-weight: 700;
+  font-family: 'Rubik', sans-serif;
+}
+
+.boton-feedback:hover{
+  background-color: #73d3ed;
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+.seccion-redessociles a{
+  margin-right: 5px;
+}
+
+.seccion-feedback p{
+  font-family: 'Rubik', sans-serif;
+  color: #333;
+  font-weight: 600;
+}
+
+.infosoporte,
+.infotelefono,
+.seccion-redessociles a {
+  text-decoration: wavy;
+  color: #d309b8;
+  font-family: 'Rubik', sans-serif;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.infosoporte:hover,
+.infotelefono:hover,
+.seccion-redessociles a:hover {
+  font-size: 16px;
+  transform: translateY(-2px);
+}
+
+.feedbacksusse{
+  color: #54dfb5;
+}
+
+.modo-oscuro .texts{
+  font-family: 'Nunito', sans-serif;
+  color: #fff;
+  font-size: 17px;
+}
+
+.modo-oscuro .titulos{
+  font-family: 'Nunito', sans-serif;
+  color: #ffc266;
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.modo-oscuro .texto-bajotitulo{
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: 'Nunito', sans-serif;
+}
+
+.modo-oscuro .seccion-feedback p{
+  font-family: 'Rubik', sans-serif;
+  color: #ADA8B6;
+  font-weight: 600;
+}
+
+.modo-oscuro .volverahome{
+  color: #ffc266;
 }

@@ -4,6 +4,7 @@ import LoginForm from "./components/LoginForm";
 import Home from "./components/Home";
 import Registro from "./components/Registro";
 import Dashboard from "./components/Dashboard";
+import Mas from "./components/MasSobreTaskFlow";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/Home" element={<Home />} />
         <Route path="/Registro" element={<Registro />} />
         <Route path="/Dashboard" element={<Dashboard />} />
+        <Route path="/Mas" element={<Mas />} />
       </Routes>
     </BrowserRouter>
   );

@@ -44,6 +44,7 @@ const Home = () => {
   const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
   const [mostrarModalOpciones, setMostrarModalOpciones] = useState(false);
   const [mostrarModalOpcionesMenu, setMostrarModalOpcionesMenu] = useState(false);
+  const [mostrarModalGraficos, setMostrarModalGraficos] = useState(false);
   const [modoOrdenamiento, setModoOrdenamiento] = useState(() => {
     return localStorage.getItem("modoOrdenamiento") || "fecha";
   });
@@ -60,6 +61,7 @@ const Home = () => {
 
   //#####################################
 
+  //funcion datos de usuario
 useEffect(() => {
   //funcion optener datos del usuario
   const obtenerDatosUsuario = async () => {
@@ -76,6 +78,9 @@ useEffect(() => {
 
   obtenerDatosUsuario();
 }, []);
+
+  //funcion activiada usuario
+
 
   //funcion cerrar sesion
   const handleLogout = () => {
@@ -381,7 +386,7 @@ useEffect(() => {
   //#######################################################################
   //variables seccion graficos
   
-  const [mostrarModalGraficos, setMostrarModalGraficos] = useState(false);
+  
 
     //⭕ Contar tareas
     const totalTareas = tareas.length;
@@ -648,7 +653,7 @@ useEffect(() => {
                         </label>
                         <p>Orden por {modoOrdenamiento === "fecha" ? "fecha" : "prioridad"}</p><br />
 
-                        <a href="#">mas sobre TaskFlow</a>
+                        <a href="/Mas">mas sobre TaskFlow</a>
                         </div>
                         
                         <button onClick={() => setMostrarModalOpcionesMenu(false)}>Cerrar</button>

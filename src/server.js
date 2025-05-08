@@ -8,8 +8,27 @@ const { Pool } = require("pg");
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
+
+// ⬇️ Middleware de actividad: ACTUALIZA LA ACTIVIDAD DEL USUARIO
+app.use(async (req, res, next) => {
+  const userId =
+    req.body.id_usuario || req.query.id_usuario || req.body.usuario_id;
+
+  if (userId) {
+    try {
+      await pool.query(
+        "UPDATE usuarios SET ultima_actividad = NOW() WHERE id = $1",
+        [userId]
+      );
+    } catch (err) {
+      console.error("Error actualizando actividad:", err);
+    }
+  }
+
+  next();
+});
 
 //conexion
 const pool = new Pool({
@@ -31,8 +50,6 @@ bcrypt.hash("contraseña", 10, (err, hash) => {
   if (err) console.error(err);
   console.log("🔑 Hash generado:", hash);
 }); */
-
-
 
 
 //función info conexion
@@ -64,7 +81,6 @@ const testDBConnection = async () => {
 testDBConnection();
 
 
-
 /*
 const obtenerUsuarios = async () => {
   try {
@@ -76,10 +92,6 @@ const obtenerUsuarios = async () => {
 };
 
 obtenerUsuarios(); */
-
-
-
-
 
 
 //SERVICIOS########################################################################
@@ -245,9 +257,6 @@ app.delete("/tareas/:id", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
-});
 
 
 // Finalizar tarea tarea #########################################
@@ -261,4 +270,84 @@ app.put("/tareas/:id/finalizar", async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Error al actualizar el estado de la tarea" });
   }
+});
+
+
+
+// #FUNCIONES DASHBOARD-------------------------------------------------------------
+// Contar datos ####################################################################
+app.get("/dashboard/estadisticas", async (req, res) => {
+  try {
+    const totalUsuarios = await pool.query(`SELECT COUNT(*) FROM usuarios`);
+    const usuariosActivos = await pool.query(`SELECT COUNT(*) FROM usuarios WHERE ultima_actividad >= NOW() - INTERVAL '5 minutes'`);
+    const usuariosNuevos = await pool.query(`SELECT COUNT(*) FROM usuarios WHERE fecha_registro >= NOW() - INTERVAL '7 days'`);
+    const totalFeedback = await pool.query(`SELECT COUNT(*) FROM feedback`);
+
+    res.json({
+      totalUsuarios: parseInt(totalUsuarios.rows[0].count),
+      usuariosActivos: parseInt(usuariosActivos.rows[0].count),
+      usuariosNuevos: parseInt(usuariosNuevos.rows[0].count),
+      feedback: parseInt(totalFeedback.rows[0].count),
+    });
+  } catch (error) {
+    console.error("Error al obtener estadísticas:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+//Guardar comentarios
+app.post("/feedback", async (req, res) => {
+  const { estrellas, comentario, usuario_id } = req.body;
+
+  if (!estrellas || !comentario || !usuario_id) {
+    return res.status(400).json({ error: "Campos incompletos" });
+  }
+
+  try {
+    const existe = await pool.query(
+      "SELECT 1 FROM feedback WHERE id_usuario = $1",
+      [usuario_id]
+    );
+
+    if (existe.rowCount > 0) {
+      return res.status(409).json({ error: "Ya has enviado un feedback" });
+    }
+
+    const nuevoFeedback = await pool.query(
+      "INSERT INTO feedback (id_usuario, calificacion, comentario) VALUES ($1, $2, $3) RETURNING *",
+      [usuario_id, estrellas, comentario]
+    );
+    res.status(201).json(nuevoFeedback.rows[0]);
+  } catch (err) {
+    console.error("Error al guardar feedback:", err);
+    res.status(500).json({ error: "Error del servidor" });
+  }
+});
+
+//Verificar si el usuario ya envió feedback
+app.get("/feedback/:id_usuario", async (req, res) => {
+  const { id_usuario } = req.params;
+
+  try {
+    const resultado = await pool.query(
+      "SELECT 1 FROM feedback WHERE id_usuario = $1",
+      [id_usuario]
+    );
+
+    if (resultado.rowCount > 0) {
+      return res.json({ yaComento: true });
+    } else {
+      return res.json({ yaComento: false });
+    }
+  } catch (err) {
+    console.error("Error al verificar feedback:", err);
+    res.status(500).json({ error: "Error del servidor" });
+  }
+});
+
+
+
+
+app.listen(port, () => {
+  console.log(`Servidor corriendo en http://localhost:${port}`);
 });
