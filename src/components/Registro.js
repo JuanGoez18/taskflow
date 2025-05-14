@@ -29,7 +29,7 @@ const Registro = ({ onClose }) => {
         setModalExito(true);
         setTimeout(() => {
           setModalExito(false);
-          window.location.href = "/";
+          window.location.href = "/Login";
         }, 3000);
       } else {
         alert("Error al registrar usuario");
@@ -42,21 +42,30 @@ const Registro = ({ onClose }) => {
   return (
     <div className="form">
       <div className="contem">
-        <h2 className="title-registro">Registro</h2>
-        <div className="inputs-register">
+        {/* LEFT: Formulario */}
+        <div className="left-section">
+          <h2 className="title-registro">Registro</h2>
           <form onSubmit={handleSubmit}>
             <input type="text" name="nombre" placeholder="Nombre" onChange={handleChange} required />
             <input type="text" name="apellido" placeholder="Apellido" onChange={handleChange} required />
             <input type="email" name="email" placeholder="Correo" onChange={handleChange} required />
             <input type="number" name="edad" placeholder="Edad" onChange={handleChange} required />
             <input type="password" name="contraseña" placeholder="Contraseña" onChange={handleChange} required />
-            <button type="button" onClick={() => window.location.href = "/"}>Cancelar</button>
-            <button type="submit">Registrarse</button>
+            <div>
+              <button type="button" onClick={() => window.location.href = "/"}>Cancelar</button>
+              <button type="submit">Registrarse</button>
+            </div>
           </form>
+        </div>
+
+        {/* RIGHT: Frase o branding */}
+        <div className="right-section">
+          <p className="taskflow-phrase">
+            Organiza tu día, prioriza tus tareas y alcanza tus metas. TaskFlow te acompaña paso a paso.
+          </p>
         </div>
       </div>
 
-      {/* MODAL DE ÉXITO */}
       {modalExito && (
         <div className="modal">
           <div className="modal-content">

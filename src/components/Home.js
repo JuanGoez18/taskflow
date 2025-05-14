@@ -79,8 +79,6 @@ useEffect(() => {
   obtenerDatosUsuario();
 }, []);
 
-  //funcion activiada usuario
-
 
   //funcion cerrar sesion
   const handleLogout = () => {
@@ -88,7 +86,7 @@ useEffect(() => {
     if (confirmar) {
       setMostrarModal(false);
       localStorage.clear();
-      navigate("/");
+      navigate("/Login");
     }
   };
 
