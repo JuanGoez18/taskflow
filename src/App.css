@@ -73,11 +73,17 @@
   display: flex;
 }
 
+.cajaseccion2 p, h4{
+  margin-right: 5%;
+  margin-left: 5%;
+}
+
 .cajaseccion2 .img2,
 .cajaseccion2 .img3,
 .cajaseccion2 .img4 {
   width: 90%;
   height: auto;
+  max-height: 300px;
   object-fit: contain;
   margin-right: 5%;
   margin-left: 5%;
