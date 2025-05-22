@@ -279,15 +279,42 @@ app.put("/tareas/:id/finalizar", async (req, res) => {
 app.get("/dashboard/estadisticas", async (req, res) => {
   try {
     const totalUsuarios = await pool.query(`SELECT COUNT(*) FROM usuarios`);
+    const totalUsuariosSemanaAnterior = await pool.query(`SELECT COUNT(*) FROM usuarios WHERE fecha_registro BETWEEN NOW() - INTERVAL '14 days' AND NOW() - INTERVAL '7 days'`);
     const usuariosActivos = await pool.query(`SELECT COUNT(*) FROM usuarios WHERE ultima_actividad >= NOW() - INTERVAL '5 minutes'`);
+    const usuariosActivosSemana = await pool.query(`SELECT COUNT(*) FROM usuarios WHERE ultima_actividad >= NOW() - INTERVAL '7 days'`);
+    const usuariosActivosSemanaAnterior = await pool.query(`SELECT COUNT(*) FROM usuarios WHERE ultima_actividad BETWEEN NOW() - INTERVAL '14 days' AND NOW() - INTERVAL '7 days'`);
     const usuariosNuevos = await pool.query(`SELECT COUNT(*) FROM usuarios WHERE fecha_registro >= NOW() - INTERVAL '7 days'`);
+    const usuariosNuevosSemanaAnterior = await pool.query(`SELECT COUNT(*) FROM usuarios WHERE fecha_registro BETWEEN NOW() - INTERVAL '14 days' AND NOW() - INTERVAL '7 days'`);
     const totalFeedback = await pool.query(`SELECT COUNT(*) FROM feedback`);
+    const feedbackSemanaAnterior = await pool.query(`SELECT COUNT(*) FROM feedback WHERE fecha BETWEEN NOW() - INTERVAL '14 days' AND NOW() - INTERVAL '7 days'`);
+
+
+    const usuariosHoy = await pool.query(`SELECT COUNT(*) FROM usuarios WHERE fecha_registro::date = CURRENT_DATE`);
+    const usuariosMes = await pool.query(`SELECT COUNT(*) FROM usuarios WHERE DATE_PART('month', fecha_registro) = DATE_PART('month', CURRENT_DATE)`);
+    const usuariosAño = await pool.query(`SELECT COUNT(*) FROM usuarios WHERE DATE_PART('year', fecha_registro) = DATE_PART('year', CURRENT_DATE)`);
+    const tareasTotales = await pool.query(`SELECT COUNT(*) FROM tareas`);
+    const promedioTareasPorUsuario = await pool.query(`SELECT (COUNT(*) * 1.0) / NULLIF((SELECT COUNT(*) FROM usuarios), 0) AS promedio FROM tareas`);
+
+    const promedioCalificacion = await pool.query(`SELECT AVG(calificacion) AS promedio FROM feedback`);
 
     res.json({
       totalUsuarios: parseInt(totalUsuarios.rows[0].count),
+      totalUsuariosSemanaAnterior: parseInt(totalUsuariosSemanaAnterior.rows[0].count),
       usuariosActivos: parseInt(usuariosActivos.rows[0].count),
+      usuariosActivosSemana: parseInt(usuariosActivosSemana.rows[0].count),
+      usuariosActivosSemanaAnterior: parseInt(usuariosActivosSemanaAnterior.rows[0].count),
       usuariosNuevos: parseInt(usuariosNuevos.rows[0].count),
+      usuariosNuevosSemanaAnterior: parseInt(usuariosNuevosSemanaAnterior.rows[0].count),
       feedback: parseInt(totalFeedback.rows[0].count),
+      feedbackSemanaAnterior: parseInt(feedbackSemanaAnterior.rows[0].count),
+
+      usuariosHoy: parseInt(usuariosHoy.rows[0].count),
+      usuariosMes: parseInt(usuariosMes.rows[0].count),
+      usuariosAño: parseInt(usuariosAño.rows[0].count),
+      tareasTotales: parseInt(tareasTotales.rows[0].count),
+      promedioTareasPorUsuario: parseFloat(promedioTareasPorUsuario.rows[0].promedio),
+
+      promedioCalificacion: parseFloat(promedioCalificacion.rows[0].promedio).toFixed(2)
     });
   } catch (error) {
     console.error("Error al obtener estadísticas:", error);
@@ -342,6 +369,54 @@ app.get("/feedback/:id_usuario", async (req, res) => {
   } catch (err) {
     console.error("Error al verificar feedback:", err);
     res.status(500).json({ error: "Error del servidor" });
+  }
+});
+
+// #FUNCIONESX2 DASHBOARD-------------------------------------------------------------
+//Admin funciones usuarios
+
+//mostrar Usuarios
+app.get("/dashboard/usuarios", async (req, res) => {
+  const result = await pool.query("SELECT id, nombre FROM usuarios");
+  res.json(result.rows);
+});
+
+//eliminar Usuarios
+app.delete("/dashboard/usuarios/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Primero elimina sus comentarios
+    await pool.query("DELETE FROM feedback WHERE id_usuario = $1", [id]);
+
+    // Luego elimina el usuario
+    await pool.query("DELETE FROM usuarios WHERE id = $1", [id]);
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error al eliminar usuario:", error);
+    res.status(500).json({ error: "Error al eliminar usuario" });
+  }
+});
+
+//mostar Comentarios
+app.get("/dashboard/feedback", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        f.id, 
+        f.comentario, 
+        f.calificacion, 
+        f.fecha, 
+        u.id AS id_usuario, 
+        u.nombre AS usuario
+      FROM feedback f
+      JOIN usuarios u ON f.id_usuario = u.id
+      ORDER BY f.id DESC
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error al obtener feedback:", error);
+    res.status(500).json({ error: "Error al obtener feedback" });
   }
 });
 
