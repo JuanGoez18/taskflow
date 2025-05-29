@@ -74,15 +74,14 @@ const LoginForm = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-            <button type="button" onClick={() => window.location.href = "/"}>Cancelar</button>
+            <button type="button" onClick={() => window.history.back()}>Cancelar</button>
             <button type="submit" className="btn-iniciar-sesion">
               Iniciar Sesión
             </button>
           </form>
 
-          <p className="txt-notenercuenta">
-            ¿No tienes cuenta? <a href="/Registro" className="link-registro">Regístrate aquí</a>
-          </p>
+          <p className="txt-notenercuenta">¿No tienes cuenta? <a href="/Registro" className="link-registro">Regístrate aquí</a></p>
+          <a href="/Recuperacion" className="link-registro">🔐Recuperar Contraseña</a>
         </div>
 
         <div className="right-section">

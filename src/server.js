@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config({ path: __dirname + '/../.env' });
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
@@ -420,6 +420,77 @@ app.get("/dashboard/feedback", async (req, res) => {
   }
 });
 
+
+// #FUNCIONES RECUPERAR CONTRASEÑA--------------------------------------------------
+// Recuperar cuenta ####################################################################
+
+const nodemailer = require("nodemailer");
+
+app.post("/recuperar", async (req, res) => {
+  const { email } = req.body;
+
+  const query = "SELECT * FROM usuarios WHERE email = $1";
+  const values = [email];
+
+
+  try {
+    const result = await pool.query(query, values);
+    const user = result.rows[0];
+
+    if (!user) {
+      return res.json({ mensaje: "Correo no registrado." });
+    }
+
+
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "15m" });
+
+    const enlace = `http://localhost:3000/restablecer/${token}`;
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "anonimopapo3@gmail.com",
+        pass: "igik kdug pzfx wyhm",
+      },
+    });
+
+    await transporter.sendMail({
+      from: "TaskFlow",
+      to: email,
+      subject: "Recupera tu contraseña",
+      html: `<p>Haz clic aquí para recuperar tu contraseña: <a href="${enlace}">${enlace}</a></p>`,
+    });
+
+    res.json({ mensaje: "Correo de recuperación enviado." });
+
+  } catch (err) {
+    console.error("Error al recuperar contraseña:", err);
+    res.status(500).json({ mensaje: "Error del servidor" });
+  }
+});
+
+
+
+app.post("/restablecer", async (req, res) => {
+  const { token, nuevaContraseña } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const userId = decoded.id;
+    const hashedPassword = await bcrypt.hash(nuevaContraseña, 10);
+
+    await pool.query("UPDATE usuarios SET contraseña = $1 WHERE id = $2", [
+      hashedPassword,
+      userId,
+    ]);
+
+    res.json({ mensaje: "Contraseña actualizada correctamente" });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: "Token inválido o expirado" });
+  }
+});
 
 
 

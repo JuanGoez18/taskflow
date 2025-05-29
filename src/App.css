@@ -26,8 +26,8 @@
 .seccionlinksinicio a{
   float: right;
   text-decoration: wavy;
-  color: #fff;
-  background-color: #ff0077;
+  color: #7423bb;
+  background-color: #00c2f8;
   border-radius: 15px;
   padding: 5px;
   font-family: 'Rubik', sans-serif;
@@ -42,8 +42,9 @@
 .seccionlinksinicio a:hover{
   font-size: 21px;
   transform: translateY(-3px);
-  background-color: #b80056;
-  border-radius: 10px;
+  background-color: #73d3ed;
+  color: #3d0072;
+  border-radius: 5px;
 }
 
 .seccioninicio1{
@@ -326,6 +327,14 @@ label {
   color: #4A008B;
   font-weight: 900;
   font-family: 'Quicksand', sans-serif;
+}
+
+.required {
+  font-size: 20px;
+  color: red;
+  margin-left: 4px;
+  text-align: left;
+  padding: 0;
 }
 
 
@@ -1833,4 +1842,51 @@ strong{
 
 .modo-oscuro .volverahome{
   color: #ffc266;
+}
+
+
+/*######################################*/
+/*Recuperar contraseña*/
+
+
+.formrecuperarclave{
+  margin-top: 0;
+  padding: 2%;
+  height: 300px;
+}
+
+.contem2{
+  display: flex;
+  flex-direction: row;
+  background-color: #fff;
+  width: 70%;
+  max-height: 500px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.contem2 input{
+  width: 300px;
+  padding: 5px;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: 'Nunito', sans-serif;
+  border-radius: 10px;
+}
+
+.contem2 button{
+  width: 180px;
+  height: 30px;
+  border: none;
+  border-radius: 10px;
+  background-color: #00c2f8;
+  color: #333;
+  font-weight: 700;
+  font-family: 'Rubik', sans-serif;
+}
+
+.contem2 button:hover{
+  background-color: #73d3ed;
+  transform: scale(1.05);
+  cursor: pointer;
 }

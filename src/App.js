@@ -6,6 +6,8 @@ import Registro from "./components/Registro";
 import Dashboard from "./components/Dashboard";
 import Mas from "./components/MasSobreTaskFlow";
 import Inicio from "./components/Inicio";
+import RecuperarContraseña from "./components/RecuperarContraseña";
+import RestablecerContraseña from "./components/RestablecerContraseña";
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
         <Route path="/Registro" element={<Registro />} />
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/Mas" element={<Mas />} />
+        <Route path="/Recuperacion" element={<RecuperarContraseña />} />
+        <Route path="/restablecer/:token" element={<RestablecerContraseña />} />
       </Routes>
     </BrowserRouter>
   );
