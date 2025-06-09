@@ -1,7 +1,26 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid, ResponsiveContainer } from "recharts";
 
 const Dashboard = () => {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+
+    if (!userData) {
+      navigate("/Login");
+      return;
+    }
+
+    const user = JSON.parse(userData);
+
+    if (user.tipo !== "admin") {
+      alert("Acceso denegado. Esta sección es solo para administradores.");
+      navigate("/Home"); // o donde quieras redirigir al usuario normal
+    }
+  }, []);
 
   //datos usuarios
   const [stats, setStats] = useState({
@@ -128,6 +147,19 @@ useEffect(() => {
     .catch((err) => console.error("Error al cargar feedback:", err));
 }, []);
 
+//bloquear scroll dentro de los modals
+    useEffect(() => {
+      if (mostrarModalFunciones || mostrarModalPerfil) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "";
+      }
+    
+      return () => {
+        document.body.style.overflow = "";
+      };
+    }, [mostrarModalFunciones, mostrarModalPerfil]);
+
 
 
 
@@ -207,11 +239,13 @@ useEffect(() => {
         </header>
 
         <div className="seccion-links">
-          <a href="/">Home</a>
+          <a href="/">Inicio</a>
+          <a href="/Home">Home</a>
           <a href="#graficos">Graficos</a>
           <a href="#analitica">Analitica</a>
           <a href="#feedback">Comentarios</a>
-          <a onClick={() => setMostrarModalFunciones(true)}>Funciones</a></div>
+          <a onClick={() => setMostrarModalFunciones(true)}>Funciones</a>
+        </div>
 
         {/* CONTENIDO */}
         <p className="seleccion-titulo">Datos de Usuarios</p>

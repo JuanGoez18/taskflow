@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, FlatTree } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
@@ -45,6 +45,9 @@ const Home = () => {
   const [mostrarModalOpciones, setMostrarModalOpciones] = useState(false);
   const [mostrarModalOpcionesMenu, setMostrarModalOpcionesMenu] = useState(false);
   const [mostrarModalGraficos, setMostrarModalGraficos] = useState(false);
+  const [notificaciones, setNotificaciones] = useState([]);
+  const [mostrarNotificaciones, setMostrarNotificaciones] = useState(false);
+  const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
   const [modoOrdenamiento, setModoOrdenamiento] = useState(() => {
     return localStorage.getItem("modoOrdenamiento") || "fecha";
   });
@@ -81,14 +84,14 @@ useEffect(() => {
 
 
   //funcion cerrar sesion
-  const handleLogout = () => {
-    const confirmar = window.confirm("¿Estás seguro de que deseas cerrar sesión?");
-    if (confirmar) {
-      setMostrarModal(false);
-      localStorage.clear();
-      navigate("/Login");
-    }
-  };
+  const cerrarSesion = () => {
+  localStorage.removeItem("id.user");
+  localStorage.removeItem("primera_vez");
+  localStorage.removeItem("tareasNotificadas2");
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  navigate("/Login");
+};
 
   //funcion validacion de sesion activa
   useEffect(() => {
@@ -103,20 +106,22 @@ useEffect(() => {
 
   //funcion pantallas de carga
   useEffect(() => {
-    if (!localStorage.getItem("primera_vez")) {
-      setMostrarBienvenida(true);
-      localStorage.setItem("primera_vez", "false"); 
-  
-      setTimeout(() => {
-        setMostrarBienvenida(false);
-        setCargando(false);
-      }, 4000); 
-    } else {
-      setTimeout(() => {
-        setCargando(false);
-      }, 2000); 
-    }
-  }, []);
+  const primeraVez = localStorage.getItem("primera_vez");
+
+  if (primeraVez === "true") {
+    setMostrarBienvenida(true);
+    localStorage.setItem("primera_vez", "false");
+
+    setTimeout(() => {
+      setMostrarBienvenida(false);
+      setCargando(false);
+    }, 4000);
+  } else {
+    setTimeout(() => {
+      setCargando(false);
+    }, 1000);
+  }
+}, []);
   
 
   //funciones de Databases ################
@@ -157,7 +162,7 @@ useEffect(() => {
       });
 
       if (res.ok) {
-        const tareaCreada = await res.json(); // Obtener la tarea creada con ID
+        const tareaCreada = await res.json();
         setTareas([...tareas, tareaCreada]);
         abrirEditor(tareaCreada); 
       }
@@ -272,6 +277,8 @@ useEffect(() => {
           position: "top-left",
           autoClose: 15000,
         });
+        agregarNotificacion(`⚠️ La tarea "${tarea.titulo}" ha vencido.`, "warning");
+        mostrarNotificacionSistema("⚠️ Tarea vencida", `La tarea "${tarea.titulo}" ha vencido.`);
       });
   
       const idsNotificados = nuevasTareasVencidas.map(t => t.id);
@@ -309,9 +316,11 @@ useEffect(() => {
           toast.info(`🔔 Tarea: "${tarea.titulo}" próximamente vence`, {
             className: "toast-custom2",
             position: "top-left",
-            autoClose: 15000,
+            autoClose: 5000,
           });
   
+          agregarNotificacion(`⚠️ La tarea "${tarea.titulo}" vence pronto.`, "warning");
+          mostrarNotificacionSistema("🔔 Tarea por vencer", `La tarea "${tarea.titulo}" vence pronto.`);
           notificados.push(tarea.id);
           localStorage.setItem("tareasNotificadas2", JSON.stringify(notificados));
         }
@@ -387,10 +396,30 @@ useEffect(() => {
   
 
     //⭕ Contar tareas
+    //Total
     const totalTareas = tareas.length;
-    const tareasPendientes = tareas.filter(t => new Date(t.fecha_limite) >= new Date() && t.estado === 0).length;
-    
-    const tareasVencidas2 = tareas.filter(t => new Date(t.fecha_limite) < new Date() && t.estado === 0).length;
+    //pendientes
+    const ahora2 = new Date();
+
+    const tareasPendientes = tareas.filter(t => {
+      if (!t.fecha_limite || !t.hora_notificacion) return false;
+
+      const [h, m, s] = t.hora_notificacion.split(":");
+      const fechaHora = new Date(t.fecha_limite);
+      fechaHora.setHours(Number(h), Number(m), Number(s || 0), 0);
+
+      return fechaHora >= ahora2 && t.estado === 0;
+    }).length;
+    //vencidas
+    const tareasVencidas2 = tareas.filter(t => {
+      if (!t.fecha_limite || !t.hora_notificacion) return false;
+
+      const [h, m, s] = t.hora_notificacion.split(":");
+      const fechaHora = new Date(t.fecha_limite);
+      fechaHora.setHours(Number(h), Number(m), Number(s || 0), 0);
+
+      return fechaHora < ahora2 && t.estado === 0;
+    }).length;
 
     //⭕ colores grafica de pastel
     const data = [
@@ -411,7 +440,7 @@ useEffect(() => {
       return "Crítico";
     };
 
-    //⭕ promedio de dias segun cntidad de tareas pendientes
+    //⭕ promedio de dias segun cantidad de tareas pendientes
     const calcularPromedioDiasRestantes = (tareas) => {
       if (tareas.length === 0) return "Sin tareas activas";
     
@@ -452,8 +481,8 @@ useEffect(() => {
     //🛑funcion eliminar cuenta
     const handleEliminarCuenta = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/usuario/${usuario.id}`, {
-          method: "DELETE",
+        const res = await fetch(`http://localhost:5000/usuario/desac/${usuario.id}`, {
+          method: "PUT",
         });
   
         if (res.ok) {
@@ -539,6 +568,51 @@ useEffect(() => {
   }, [modoOrdenamiento]);
 
 
+  //perimisos de notificacion
+  useEffect(() => {
+  if ("Notification" in window && Notification.permission !== "granted") {
+    Notification.requestPermission().then((permission) => {
+      console.log("Permiso de notificación:", permission);
+    });
+  }
+}, []);
+
+const mostrarNotificacionSistema = (titulo, cuerpo) => {
+  if ("Notification" in window && Notification.permission === "granted") {
+    new Notification(titulo, {
+      body: cuerpo,
+      icon: "/icono_notificacion.png",
+    });
+  }
+};
+
+const agregarNotificacion = (mensaje, tipo = "info") => {
+  setNotificaciones((prev) => [
+    ...prev,
+    { id: Date.now(), mensaje, tipo, leida: false }
+  ]);
+};
+
+
+//detectar toque fuera de notificaciones
+const dropdownRef = useRef(null);
+
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setMostrarNotificaciones(false);
+    }
+  };
+
+  if (mostrarNotificaciones) {
+    document.addEventListener("mousedown", handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [mostrarNotificaciones]);
+
 
 
 
@@ -570,8 +644,8 @@ useEffect(() => {
         <div className="pantalla-carga">
           <motion.div
             initial={{ x: 20 }}
-            animate={{ x: 210 }}
-            transition={{ duration: 1.5, ease: "linear" }}
+            animate={{ x: 230 }}
+            transition={{ duration: 1.2, ease: "linear" }}
             className="lapiz"
           >
             <FaPencilAlt size={30} color="#fff" />
@@ -600,6 +674,32 @@ useEffect(() => {
                   {/* 📌 Botones en PC */}
                   {!esMovil ? (
                     <>
+                      <div className="campana-container">
+                        <button className="btn-campana" onClick={() => setMostrarNotificaciones(!mostrarNotificaciones)}>
+                          🔔
+                          {notificaciones.some(n => !n.leida) && <span className="notificacion-dot"></span>}
+                        </button>
+
+                        {mostrarNotificaciones && (
+                          <div className="notificaciones-dropdown" ref={dropdownRef}>
+                            <h4>Notificaciones</h4>
+                            {notificaciones.length === 0 ? (
+                              <p>No hay notificaciones</p>
+                            ) : (
+                              <ul>
+                                {notificaciones.slice().reverse().map((n) => (
+                                  <li key={n.id} className={`notificacion-item ${n.tipo}`}>
+                                    {n.mensaje}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                            <button onClick={() => {
+                              setNotificaciones((prev) => prev.map(n => ({ ...n, leida: true })));
+                            }}>leídas ✔</button>
+                          </div>
+                        )}
+                      </div>
                       <button className="btn-opciones" onClick={() => setMostrarModal(true)}>Perfil</button>
                       <button className="btn-opciones" onClick={() => setMostrarModalGraficos(true)}>Gráficos</button>
                       <button className="btn-opciones" onClick={() => setMostrarModalOpcionesMenu(true)}>Opciones</button>
@@ -612,6 +712,7 @@ useEffect(() => {
                     >
                       ☰ Menú
                     </button>
+                    
                   )}
 
                   {/* 📌 Modal de opciones en móviles */}
@@ -619,6 +720,33 @@ useEffect(() => {
                     <div className="modal">
                       <div className="modal-content">
                         <h2>Menú</h2>
+                        <div className="campana-container">
+                        <button className="btn-campana" onClick={() => setMostrarNotificaciones(!mostrarNotificaciones)}>
+                          🔔
+                          {notificaciones.some(n => !n.leida) && <span className="notificacion-dot"></span>}
+                        </button>
+
+                        {mostrarNotificaciones && (
+                          <div className="notificaciones-dropdown">
+                            <h4>Notificaciones</h4>
+                            {notificaciones.length === 0 ? (
+                              <p>No hay notificaciones</p>
+                            ) : (
+                              <ul>
+                                {notificaciones.slice().reverse().map((n) => (
+                                  <li key={n.id} className={`notificacion-item ${n.tipo}`}>
+                                    {n.mensaje}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                            <button onClick={() => {
+                              setNotificaciones((prev) => prev.map(n => ({ ...n, leida: true })));
+                            }}>leídas ✔</button>
+                            <button onClick={() => setMostrarNotificaciones(false)}>Cerrar</button>
+                          </div>
+                        )}
+                      </div>
                         <button className="btn-opciones" onClick={() => {setMostrarModal(true);setMostrarModalOpciones(false);}}>Perfil</button>
                         <button className="btn-opciones" onClick={() => {setMostrarModalGraficos(true);setMostrarModalOpciones(false);}}>Gráficos</button>
                         <button className="btn-opciones" onClick={() => {setMostrarModalOpcionesMenu(true);setMostrarModalOpciones(false)}}>Opciones</button>
@@ -649,9 +777,10 @@ useEffect(() => {
                           />
                           <span className="slider"></span>
                         </label>
-                        <p>Orden por {modoOrdenamiento === "fecha" ? "fecha" : "prioridad"}</p><br />
+                        <p>Orden por {modoOrdenamiento === "fecha" ? "fecha" : "prioridad"}</p><br/>
 
-                        <a href="/Mas">mas sobre TaskFlow</a>
+                        <a href="/Mas">mas sobre TaskFlow</a><br/><br/>
+                        <a href="/MyPerfil">Perfil</a>
                         </div>
                         
                         <button onClick={() => setMostrarModalOpcionesMenu(false)}>Cerrar</button>
@@ -735,7 +864,7 @@ useEffect(() => {
 
                         <div className="modal-botones-perfil">
                           <button onClick={() => setModalConfirmarEliPerfil(true)} className="btn-danger">Borrar cuenta</button>
-                          <button onClick={handleLogout} className="btn-logout">Desconectar</button>
+                          <button onClick={() => setMostrarConfirmacion(true)} className="btn-logout">Desconectar</button>
                           <button onClick={() => setMostrarModal(false)} className="btn-cerrar">Cerrar</button>
 
                           {/* Modal eleminar cuaneta */}
@@ -746,6 +875,22 @@ useEffect(() => {
                                 <p>Esta acción es irreversible.</p>
                                 <button onClick={() => setModalConfirmarEliPerfil(false)}>Cancelar</button>
                                 <button onClick={handleEliminarCuenta} className="btn-danger">Sí, eliminar</button>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Modal confirmar cerrar sesion */}
+                          {mostrarConfirmacion && (
+                            <div className="modal">
+                              <div className="modal-content">
+                                <h3>¿Estás seguro de que deseas cerrar sesión?</h3>
+                                <div style={{ display: "flex", gap: "10px", marginTop: "15px", marginLeft: "10%" }}>
+                                  <button className="btn-cancelar-tarea" onClick={() => setMostrarConfirmacion(false)}>Cancelar</button>
+                                  <button className="btn-opciones" onClick={() => {
+                                    setMostrarConfirmacion(false);
+                                    cerrarSesion();
+                                  }}>Confirmar</button>
+                                </div>
                               </div>
                             </div>
                           )}
@@ -847,7 +992,23 @@ useEffect(() => {
                   </AnimatePresence>
                 </div>
               </div>
-              <p className="copyright">Copyright © 2025 RHcorp®. All rights reserved.</p>
+              <br></br>
+              {/* Contacto y redes */}
+              <section className="seccion-feedback">
+                <div className="seccion-redessociles">
+                  <a href="/" className="infosoporte"> Inicio. </a>
+                  <a href="/Mas" className="infosoporte"> MasDeTaskflow. </a>
+                  <a href="#"> Facebook. </a>
+                  <a href="#"> Instagram. </a>
+                  <a href="#"> LinkedIn. </a>
+                </div>
+                <p>Correo: <a href="#" className="infosoporte">soporte@taskflow.com</a></p>
+                <p>Teléfono: <span className="infotelefono">+57 01800 3423</span></p>
+              </section>
+
+              <footer className="copyright">
+              Copyright © 2025 RHcorp®. All rights reserved.
+              </footer>
             </div>
 
             {/* Modal-tareas */}

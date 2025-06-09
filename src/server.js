@@ -134,6 +134,11 @@ app.post("/login", async (req, res) => {
     }
 
     const user = result.rows[0];
+
+    if (user.estado === false) {
+      return res.status(403).json({ message: "Tu cuenta ha sido desactivada. Contacta al soporte para más información." });
+    }
+    
     const passwordMatch = await bcrypt.compare(contraseña, user.contraseña);
 
     if (!passwordMatch) {
@@ -153,7 +158,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-
+//optener usuario
 app.get("/usuario/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -170,12 +175,12 @@ app.get("/usuario/:id", async (req, res) => {
   }
 });
 
-
-app.delete("/usuario/:id", async (req, res) => {
+//eliminar usuario
+app.put("/usuario/desac/:id", async (req, res) => {
   const { id } = req.params;
   
   try {
-    const resultado = await pool.query("DELETE FROM usuarios WHERE id = $1", [id]);
+    const resultado = await pool.query("UPDATE usuarios SET estado = false WHERE id = $1", [id]);
 
     if (resultado.rowCount === 0) {
       return res.status(404).json({ error: "Usuario no encontrado" });
@@ -187,6 +192,21 @@ app.delete("/usuario/:id", async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
+
+//actualizar usuario
+app.put("/usuario/update/:id", async (req, res) => {
+  const { id } = req.params;
+  const { nombre, apellido, edad } = req.body;
+
+  try {
+    await pool.query("UPDATE usuarios SET nombre=$1, apellido=$2, edad=$3 WHERE id=$4", [nombre, apellido, edad, parseInt(id)]);
+    res.status(200).json({ mensaje: "Usuario actualizado" });
+  } catch (error) {
+    res.status(500).json({ error: "Error al actualizar" });
+  }
+});
+
+
 
 
 
@@ -385,11 +405,8 @@ app.get("/dashboard/usuarios", async (req, res) => {
 app.delete("/dashboard/usuarios/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    // Primero elimina sus comentarios
-    await pool.query("DELETE FROM feedback WHERE id_usuario = $1", [id]);
-
-    // Luego elimina el usuario
-    await pool.query("DELETE FROM usuarios WHERE id = $1", [id]);
+    
+    await pool.query("UPDATE usuarios SET estado = false WHERE id = $1", [id]);
 
     res.json({ success: true });
   } catch (error) {

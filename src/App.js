@@ -8,6 +8,7 @@ import Mas from "./components/MasSobreTaskFlow";
 import Inicio from "./components/Inicio";
 import RecuperarContraseña from "./components/RecuperarContraseña";
 import RestablecerContraseña from "./components/RestablecerContraseña";
+import EditarPerfil from "./components/EditarPerfil";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/Mas" element={<Mas />} />
         <Route path="/Recuperacion" element={<RecuperarContraseña />} />
         <Route path="/restablecer/:token" element={<RestablecerContraseña />} />
+        <Route path="/MyPerfil" element={<EditarPerfil />} />
       </Routes>
     </BrowserRouter>
   );

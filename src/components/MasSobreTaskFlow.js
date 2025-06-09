@@ -1,3 +1,4 @@
+import { color } from "framer-motion";
 import { useState, useEffect } from "react";
 
 const MasSobreTaskFlow = () => {
@@ -169,12 +170,11 @@ useEffect(() => {
         <section className="seccion-feedback">
           <h2 className="titulos">Contacto y redes sociales</h2>
           <p>Correo: <a href="#" className="infosoporte">soporte@taskflow.com</a></p>
-          <p>Teléfono: <span className="infotelefono">+57 01800 3423</span></p>
+          <p>Teléfono: <span className="infotelefono">+57 01800 3423.</span></p>
           <div className="seccion-redessociles">
-            <a href="#">Facebook</a>
-            <a href="#">Twitter</a>
-            <a href="#">Instagram</a>
-            <a href="#">LinkedIn</a>
+            <a href="#">Facebook.</a>
+            <a href="#">Instagram.</a>
+            <a href="#">LinkedIn.</a>
           </div>
         </section>
         <p className="copyright">Copyright © 2025 RHcorp®. All rights reserved.</p>

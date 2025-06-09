@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 
 const Inicio = () => {
+  const [hayToken, setHayToken] = useState(false);
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) setHayToken(true);
+    localStorage.setItem("primera_vez", "true");
+  }, []);
 
   return (
     <div className="conten0home">
@@ -9,8 +15,16 @@ const Inicio = () => {
         <header>
             <h1 className="titulo-inicio">TaskFlow</h1>
             <div className="seccionlinksinicio">
-            <a href="/Login">Iniciar sesión</a>
-            <a href="/Registro">Registrarse</a>
+              {!hayToken ? (
+                <>
+                  <a href="/Registro">Registrarse</a>
+                  <a href="/Login" style={{ marginLeft: "10px" }}>Iniciar sesión</a>
+                </>
+              ) : (
+                <a href="/Home" className="link-registro">
+                  Ir al Home
+                </a>
+              )}
             </div>
         </header>
 
@@ -18,14 +32,15 @@ const Inicio = () => {
         <section className="seccioninicio1">
             <div className="cajaseccion1">
             <p>Una herramienta simple y potente para gestionar tus tareas diarias con prioridad, fechas y recordatorios.</p>
-            <a href="/Registro">Empieza gratis</a>
+            <a href="/#porqueTask">Por qué TaskFlow / </a>
+            <a href="/#redesTask">Redes</a>
             </div>
             <img src="/img/1.png" alt="TaskFlow ilustración" className="imgIlustracion" />
         </section>
 
         {/* FEATURES */}
         <section className="seccioninicio2">
-            <h3>¿Por qué usar TaskFlow?</h3>
+            <h3 id="porqueTask">¿Por qué usar TaskFlow?</h3>
             <div className="cajaseccion2">
                 <div>
                     <img src="/img/2.png" className="img2" />
@@ -47,14 +62,13 @@ const Inicio = () => {
         </section>
         {/* Contacto y redes */}
         <section className="seccion-feedbackinicio">
-          <h2 className="titulosredesinicio">Contacto y redes sociales</h2>
+          <h2 id="redesTask" className="titulosredesinicio">Contacto y redes sociales</h2>
           <p>Correo: <a href="#" className="infosoporte">soporte@taskflow.com</a></p>
-          <p>Teléfono: <span className="infotelefono">+57 01800 3423</span></p>
+          <p>Teléfono: <span className="infotelefono">+57 01800 3423.</span></p>
           <div className="seccion-redessociles">
-            <a href="#">Facebook</a>
-            <a href="#">Twitter</a>
-            <a href="#">Instagram</a>
-            <a href="#">LinkedIn</a>
+            <a href="#">Facebook.</a>
+            <a href="#">Instagram.</a>
+            <a href="#">LinkedIn.</a>
           </div>
         </section>
 
