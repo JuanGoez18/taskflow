@@ -12,7 +12,7 @@ import EditarPerfil from "./components/EditarPerfil";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter  basename="/taskflow">
       <Routes>
         <Route path="/" element={<Inicio />} />
         <Route path="/Login" element={<LoginForm />} />
