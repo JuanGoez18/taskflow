@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/taskflow/static/css/main.86fb3eaa.css",
-    "main.js": "/taskflow/static/js/main.28d5ff20.js",
+    "main.css": "/taskflow/static/css/main.8e6e9290.css",
+    "main.js": "/taskflow/static/js/main.583e2272.js",
     "static/media/fondoTKF2.png": "/taskflow/static/media/fondoTKF2.9880c6e4cf16da12533c.png",
     "index.html": "/taskflow/index.html",
-    "main.86fb3eaa.css.map": "/taskflow/static/css/main.86fb3eaa.css.map",
-    "main.28d5ff20.js.map": "/taskflow/static/js/main.28d5ff20.js.map"
+    "main.8e6e9290.css.map": "/taskflow/static/css/main.8e6e9290.css.map",
+    "main.583e2272.js.map": "/taskflow/static/js/main.583e2272.js.map"
   },
   "entrypoints": [
-    "static/css/main.86fb3eaa.css",
-    "static/js/main.28d5ff20.js"
+    "static/css/main.8e6e9290.css",
+    "static/js/main.583e2272.js"
   ]
 }
