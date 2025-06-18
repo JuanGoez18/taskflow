@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/taskflow/static/css/main.86fb3eaa.css",
+    "main.js": "/taskflow/static/js/main.d9be37c7.js",
+    "static/media/fondoTKF2.png": "/taskflow/static/media/fondoTKF2.9880c6e4cf16da12533c.png",
+    "index.html": "/taskflow/index.html",
+    "main.86fb3eaa.css.map": "/taskflow/static/css/main.86fb3eaa.css.map",
+    "main.d9be37c7.js.map": "/taskflow/static/js/main.d9be37c7.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.86fb3eaa.css",
+    "static/js/main.d9be37c7.js"
+  ]
+}
