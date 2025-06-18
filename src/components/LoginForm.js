@@ -11,6 +11,7 @@ const LoginForm = () => {
 useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) setHayToken(true);
+    localStorage.setItem("primera_vez", "true");
   }, []);
 
   const handleSubmit = async (e) => {
