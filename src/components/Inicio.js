@@ -43,7 +43,7 @@ const Inicio = () => {
             <h3 id="porqueTask">¿Por qué usar TaskFlow?</h3>
             <div className="cajaseccion2">
                 <div>
-                    <img src="/img/2.png" className="img2" />
+                    <img src="https://juangoez18.github.io/taskflow/img/2.png" className="img2" />
                     <h4 className="font-bold mb-2">Metricas de orgnizción</h4>
                     <p>Usa graficas y datos en tiempo real.</p>
                 </div>
