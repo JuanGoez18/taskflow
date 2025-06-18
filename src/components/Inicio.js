@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const Inicio = () => {
   const [hayToken, setHayToken] = useState(false);
@@ -18,7 +19,7 @@ const Inicio = () => {
               {!hayToken ? (
                 <>
                   <a href="/Registro">Registrarse</a>
-                  <a href="/Login" style={{ marginLeft: "10px" }}>Iniciar sesión</a>
+                  <Link to="/Login" style={{ marginLeft: "10px" }}>Iniciar sesión</Link>
                 </>
               ) : (
                 <a href="/Home" className="link-registro">
@@ -48,7 +49,7 @@ const Inicio = () => {
                     <p>Usa graficas y datos en tiempo real.</p>
                 </div>
                 <div>
-                    <img src={`${process.env.PUBLIC_URL}/img/3.png`} className="img3" alt="Fácil organización" />
+                    <img src={`${process.env.PUBLIC_URL}/img/3.PNG`} className="img3" alt="Fácil organización" />
                     <h4 className="font-bold mb-2">Fácil organización</h4>
                     <p>Organiza por fecha o por prioridad.</p>
                 </div>
