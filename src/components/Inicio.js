@@ -18,13 +18,11 @@ const Inicio = () => {
             <div className="seccionlinksinicio">
               {!hayToken ? (
                 <>
-                  <a href="/Registro">Registrarse</a>
+                  <Link to="/Registro">Registrarse</Link>
                   <Link to="/Login" style={{ marginLeft: "10px" }}>Iniciar sesión</Link>
                 </>
               ) : (
-                <a href="/Home" className="link-registro">
-                  Ir al Home
-                </a>
+                <Link to="/Home" className="link-registro">Ir al Home</Link>
               )}
             </div>
         </header>
@@ -33,8 +31,8 @@ const Inicio = () => {
         <section className="seccioninicio1">
             <div className="cajaseccion1">
             <p>Una herramienta simple y potente para gestionar tus tareas diarias con prioridad, fechas y recordatorios.</p>
-            <a href="/#porqueTask">Por qué TaskFlow / </a>
-            <a href="/#redesTask">Redes</a>
+            <a href="#porqueTask">Por qué TaskFlow /</a>
+            <a href="#redesTask">Redes</a>
             </div>
             <img src={`${process.env.PUBLIC_URL}/img/1.png`} alt="TaskFlow ilustración" className="imgIlustracion" />
         </section>
