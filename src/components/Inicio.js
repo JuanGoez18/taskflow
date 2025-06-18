@@ -35,7 +35,7 @@ const Inicio = () => {
             <a href="/#porqueTask">Por qué TaskFlow / </a>
             <a href="/#redesTask">Redes</a>
             </div>
-            <img src="/img/1.png" alt="TaskFlow ilustración" className="imgIlustracion" />
+            <img src={`${process.env.PUBLIC_URL}/img/1.png`} alt="TaskFlow ilustración" className="imgIlustracion" />
         </section>
 
         {/* FEATURES */}
@@ -43,17 +43,17 @@ const Inicio = () => {
             <h3 id="porqueTask">¿Por qué usar TaskFlow?</h3>
             <div className="cajaseccion2">
                 <div>
-                    <img src={`${process.env.PUBLIC_URL}/img/2.png`} className="img2" />
+                    <img src={`${process.env.PUBLIC_URL}/img/2.png`} className="img2" alt="Métricas de organización" />
                     <h4 className="font-bold mb-2">Metricas de orgnizción</h4>
                     <p>Usa graficas y datos en tiempo real.</p>
                 </div>
                 <div>
-                    <img src="/img/3.png" className="img3" />
+                    <img src={`${process.env.PUBLIC_URL}/img/3.png`} className="img3" alt="Fácil organización" />
                     <h4 className="font-bold mb-2">Fácil organización</h4>
                     <p>Organiza por fecha o por prioridad.</p>
                 </div>
                 <div>
-                    <img src="/img/4.png" className="img4" />
+                    <img src={`${process.env.PUBLIC_URL}/img/4.png`} className="img4" alt="Interfaz intuitiva" />
                     <h4 className="font-bold mb-2">Una interfaz simple e intuitiva</h4>
                     <p>Crea tus tareas y deja que todo fluya.</p>
                 </div>
