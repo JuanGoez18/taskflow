@@ -1417,7 +1417,7 @@ label {
 
     .modal-content-graficos {
       margin-top: 5%;
-
+      max-height: 65%;
     }
 
     .modal-content-graficos .btn-cerrar-graficos{
