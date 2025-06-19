@@ -1,13 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const RecuperarContraseña = () => {
   const [email, setEmail] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:5000/recuperar", {
+      const res = await fetch("https://taskflownodesvr.onrender.com/recuperar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -37,7 +39,7 @@ const RecuperarContraseña = () => {
                     />
                     <div>
                         <br></br>
-                        <button type="button" onClick={() => window.history.back()}>Cancelar</button>
+                        <button type="button" onClick={() => navigate(-1)}>Cancelar</button>
                         <button type="submit">Enviar enlace</button>
                     </div>
                 </form>
