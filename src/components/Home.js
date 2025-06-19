@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence, FlatTree } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
@@ -29,7 +30,7 @@ const obtenerUsuarioID = () => {
 obtenerUsuarioID();
 
 const usuario_id = localStorage.getItem("id.user");
-const API_URL = `http://localhost:5000/tareas/${usuario_id}`;
+const API_URL = `https://taskflownodesvr.onrender.com/tareas/${usuario_id}`;
 
 const Home = () => {
   const navigate = useNavigate();
@@ -69,7 +70,7 @@ useEffect(() => {
   //funcion optener datos del usuario
   const obtenerDatosUsuario = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/usuario/${usuario_id}`);
+      const res = await fetch(`https://taskflownodesvr.onrender.com/usuario/${usuario_id}`);
       if (!res.ok) throw new Error("Error al obtener datos del usuario");
       
       const data = await res.json();
@@ -155,7 +156,7 @@ useEffect(() => {
         anticipacion: "1 hour"
       };
 
-      const res = await fetch(`http://localhost:5000/tareas/${usuario_id}`, {
+      const res = await fetch(`https://taskflownodesvr.onrender.com/tareas/${usuario_id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(nuevaTarea),
@@ -174,7 +175,7 @@ useEffect(() => {
   // 🔹 Eliminar tarea ✔
   const eliminarTarea = async (id) => {
     try {
-      await fetch(`http://localhost:5000/tareas/${id}`, {
+      await fetch(`https://taskflownodesvr.onrender.com/tareas/${id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ usuario_id }),
@@ -189,7 +190,7 @@ useEffect(() => {
   // 🔹 Editar tarea ✔
   const guardarCambios = async () => {
     try {
-      await fetch(`http://localhost:5000/tareas/${tareaEditando}`, {
+      await fetch(`https://taskflownodesvr.onrender.com/tareas/${tareaEditando}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formulario),
@@ -357,7 +358,7 @@ useEffect(() => {
   //funcion finalizar tareas
   const marcarComoFinalizada = async (id) => {
     try {
-      const respuesta = await fetch(`http://localhost:5000/tareas/${id}/finalizar`, {
+      const respuesta = await fetch(`https://taskflownodesvr.onrender.com/tareas/${id}/finalizar`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"
@@ -481,13 +482,13 @@ useEffect(() => {
     //🛑funcion eliminar cuenta
     const handleEliminarCuenta = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/usuario/desac/${usuario.id}`, {
+        const res = await fetch(`https://taskflownodesvr.onrender.com/usuario/desac/${usuario.id}`, {
           method: "PUT",
         });
   
         if (res.ok) {
           alert("Cuenta eliminada correctamente");
-          window.location.href = "/";
+          navigate("/");
         } else {
           alert("Error al eliminar la cuenta");
         }
@@ -779,8 +780,8 @@ useEffect(() => {
                         </label>
                         <p>Orden por {modoOrdenamiento === "fecha" ? "fecha" : "prioridad"}</p><br/>
 
-                        <a href="/Mas">mas sobre TaskFlow</a><br/><br/>
-                        <a href="/MyPerfil">Perfil</a>
+                        <Link to="/Mas">más sobre TaskFlow</Link><br /><br />
+                        <Link to="/MyPerfil">Perfil</Link>
                         </div>
                         
                         <button onClick={() => setMostrarModalOpcionesMenu(false)}>Cerrar</button>
@@ -996,11 +997,11 @@ useEffect(() => {
               {/* Contacto y redes */}
               <section className="seccion-feedback">
                 <div className="seccion-redessociles">
-                  <a href="/" className="infosoporte"> Inicio. </a>
-                  <a href="/Mas" className="infosoporte"> MasDeTaskflow. </a>
-                  <a href="#"> Facebook. </a>
-                  <a href="#"> Instagram. </a>
-                  <a href="#"> LinkedIn. </a>
+                  <Link to="/" className="infosoporte">Inicio.</Link>
+                  <Link to="/Mas" className="infosoporte">MasDeTaskflow.</Link>
+                  <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">Facebook.</a>
+                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram.</a>
+                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn.</a>
                 </div>
                 <p>Correo: <a href="#" className="infosoporte">soporte@taskflow.com</a></p>
                 <p>Teléfono: <span className="infotelefono">+57 01800 3423</span></p>

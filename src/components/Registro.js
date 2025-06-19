@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Registro = ({ onClose }) => {
   const [formulario, setFormulario] = useState({
@@ -11,6 +12,7 @@ const Registro = ({ onClose }) => {
 
   const [modalExito, setModalExito] = useState(false);
   const [erroresFormulario, setErroresFormulario] = useState([]);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormulario({ ...formulario, [e.target.name]: e.target.value });
@@ -27,7 +29,7 @@ const Registro = ({ onClose }) => {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/registro", {
+      const res = await fetch("https://taskflownodesvr.onrender.com/registro", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formulario),
@@ -37,7 +39,7 @@ const Registro = ({ onClose }) => {
         setModalExito(true);
         setTimeout(() => {
           setModalExito(false);
-          window.location.href = "/Login";
+          navigate("/Login");
         }, 3000);
       } else {
         alert("Error al registrar usuario");
@@ -93,7 +95,7 @@ const Registro = ({ onClose }) => {
             <label><input type="number" name="edad" placeholder="Edad" onChange={handleChange} required /><span className="required">*</span></label>
             <label><input type="password" name="contraseña" placeholder="Contraseña" onChange={handleChange} required /><span className="required">*</span></label>
             <div>
-              <button type="button" onClick={() => window.history.back()}>Cancelar</button>
+              <button type="button" onClick={() => navigate(-1)}>Cancelar</button>
               <button type="submit">Registrarse</button>
             </div>
           </form>

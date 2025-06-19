@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 
 const LoginForm = () => {
@@ -120,12 +121,14 @@ useEffect(() => {
             </button>
           </form>
 
-          <p className="txt-notenercuenta">¿No tienes cuenta? <a href="/Registro" className="link-registro">Regístrate aquí</a></p>
-          <a href="/Recuperacion" className="link-registro">🔐Recuperar Contraseña</a>
+          <p className="txt-notenercuenta">
+            ¿No tienes cuenta? <Link to="/Registro" className="link-registro">Regístrate aquí</Link>
+          </p>
+          <Link to="/Recuperacion" className="link-registro">🔐Recuperar Contraseña</Link>
           {hayToken && (
-            <a href="/Home" className="link-registro" style={{ marginLeft: "10" }}>
+            <Link to="/Home" className="link-registro" style={{ marginLeft: "10px" }}>
               🏠 Ir al Inicio
-            </a>
+            </Link>
           )}
         </div>
 
