@@ -1,5 +1,6 @@
 import { color } from "framer-motion";
 import { useState, useEffect } from "react";
+import { Link } from 'react-router-dom';
 
 const MasSobreTaskFlow = () => {
   const [comentario, setComentario] = useState("");
@@ -90,7 +91,7 @@ useEffect(() => {
       <div className="conten2home">
         <div className="cjtitulo">
           <h1 className="titulohome">
-            <a className="volverahome" href="/Home">↩</a>
+            <Link className="volverahome" to="/Home">↩</Link>
             <span>Más de </span><span className="titulohome2">TaskFlow</span>
           </h1>
         </div>
