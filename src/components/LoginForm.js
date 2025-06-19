@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 const LoginForm = () => {
@@ -7,6 +8,7 @@ const LoginForm = () => {
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [hayToken, setHayToken] = useState(false);
+  const navigate = useNavigate();
 
 useEffect(() => {
     const token = localStorage.getItem("token");
@@ -53,9 +55,9 @@ useEffect(() => {
 
     // Redirigir según el tipo de usuario
     if (data.user.tipo === "admin") {
-      window.location.href = "/Dashboard";
+      navigate("/Dashboard");
     } else {
-      window.location.href = "/Home";
+      navigate("/Home");
     }
 
   } catch (error) {
