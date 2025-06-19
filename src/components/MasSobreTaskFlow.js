@@ -1,10 +1,12 @@
 import { color } from "framer-motion";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const MasSobreTaskFlow = () => {
   const [comentario, setComentario] = useState("");
   const [estrellas, setEstrellas] = useState(0);
   const [enviado, setEnviado] = useState(false);
+
 
   const usuario_id = localStorage.getItem("id.user");
 
@@ -12,7 +14,7 @@ const MasSobreTaskFlow = () => {
 useEffect(() => {
     const verificarFeedback = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/feedback/${usuario_id}`);
+            const res = await fetch(`https://taskflownodesvr.onrender.com/feedback/${usuario_id}`);
             const data = await res.json();
         if (data.yaComento) {
             setEnviado(true);
@@ -40,7 +42,7 @@ useEffect(() => {
     }
 
     try {
-        const res = await fetch("http://localhost:5000/feedback", {
+        const res = await fetch("https://taskflownodesvr.onrender.com/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ estrellas, comentario, usuario_id }),
@@ -90,7 +92,7 @@ useEffect(() => {
       <div className="conten2home">
         <div className="cjtitulo">
           <h1 className="titulohome">
-            <a className="volverahome" href="/Home">↩</a>
+            <Link className="volverahome" to="/Home">↩</Link>
             <span>Más de </span><span className="titulohome2">TaskFlow</span>
           </h1>
         </div>

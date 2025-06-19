@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 const EditarPerfil = ({ usuarioId, onCerrar }) => {
   const [form, setForm] = useState({
@@ -10,6 +11,7 @@ const EditarPerfil = ({ usuarioId, onCerrar }) => {
 
   const [loading, setLoading] = useState(true);
   const [mostrarModalExito, setMostrarModalExito] = useState(false);
+  const navigate = useNavigate();
 
   //token usuario id
   const obtenerUsuarioID = () => {
@@ -38,7 +40,7 @@ const EditarPerfil = ({ usuarioId, onCerrar }) => {
   useEffect(() => {
     const obtenerDatosUsuario = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/usuario/${usuarioId}`);
+        const res = await fetch(`https://taskflownodesvr.onrender.com/usuario/${usuarioId}`);
         const data = await res.json();
         setForm({
           nombre: data.nombre || "",
@@ -71,7 +73,7 @@ const EditarPerfil = ({ usuarioId, onCerrar }) => {
     e.preventDefault();
 
     try {
-      const res = await fetch(`http://localhost:5000/usuario/update/${usuarioId}`, {
+      const res = await fetch(`https://taskflownodesvr.onrender.com/usuario/update/${usuarioId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -83,7 +85,7 @@ const EditarPerfil = ({ usuarioId, onCerrar }) => {
         setMostrarModalExito(true);
         setTimeout(() => {
           setMostrarModalExito(false);
-          window.location.href = "/Home";
+          navigate("/Home");
         }, 3000);
       } else {
         alert("Error al actualizar el perfil.");
@@ -112,7 +114,7 @@ const EditarPerfil = ({ usuarioId, onCerrar }) => {
                 <input type="number" placeholder="Edad" name="edad" value={form.edad} onChange={handleChange} required />
               </div>
               <div>
-                <button type="button" onClick={() => window.history.back()}>Cancelar</button>
+                <button type="button" onClick={() => navigate(-1)}>Cancelar</button>
                 <button type="submit">Guardar</button>
               </div>
             </form>

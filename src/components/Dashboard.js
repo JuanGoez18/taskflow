@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid, ResponsiveContainer } from "recharts";
 
 const Dashboard = () => {
@@ -8,6 +9,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
+
 
     if (!userData) {
       navigate("/Login");
@@ -54,7 +56,7 @@ const Dashboard = () => {
   // 🔹 Cargar datos de estadistica de usuarios ✔
   useEffect(() => {
     const fetchEstadisticas = () => {
-      fetch("http://localhost:5000/dashboard/estadisticas")
+      fetch("https://taskflownodesvr.onrender.com/dashboard/estadisticas")
         .then(response => {
           if (!response.ok) throw new Error("Error en la respuesta del servidor");
           return response.json();
@@ -106,7 +108,7 @@ const Dashboard = () => {
   //Funcion cargar usuarios
   useEffect(() => {
   const fetchUsuarios = () => {
-    fetch("http://localhost:5000/dashboard/usuarios")
+    fetch("https://taskflownodesvr.onrender.com/dashboard/usuarios")
       .then(res => {
         if (!res.ok) throw new Error("Error al obtener usuarios");
         return res.json();
@@ -124,7 +126,7 @@ const eliminarUsuario = async (id) => {
   if (!confirmacion) return;
 
   try {
-    const res = await fetch(`http://localhost:5000/dashboard/usuarios/${id}`, {
+    const res = await fetch(`https://taskflownodesvr.onrender.com/dashboard/usuarios/${id}`, {
       method: "DELETE",
     });
 
@@ -141,7 +143,7 @@ const eliminarUsuario = async (id) => {
 const [feedback, setFeedback] = useState([]);
 
 useEffect(() => {
-  fetch("http://localhost:5000/dashboard/feedback")
+  fetch("https://taskflownodesvr.onrender.com/dashboard/feedback")
     .then((res) => res.json())
     .then((data) => setFeedback(data))
     .catch((err) => console.error("Error al cargar feedback:", err));
@@ -239,10 +241,10 @@ useEffect(() => {
         </header>
 
         <div className="seccion-links">
-          <a href="/">Inicio</a>
-          <a href="/Home">Home</a>
-          <a href="#graficos">Graficos</a>
-          <a href="#analitica">Analitica</a>
+          <Link to="/">Inicio</Link>
+          <Link to="/Home">Home</Link>
+          <a href="#graficos">Gráficos</a>
+          <a href="#analitica">Analítica</a>
           <a href="#feedback">Comentarios</a>
           <a onClick={() => setMostrarModalFunciones(true)}>Funciones</a>
         </div>
